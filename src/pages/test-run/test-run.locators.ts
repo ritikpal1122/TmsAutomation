@@ -58,7 +58,7 @@ export const TestRunLocators = {
   bulkSelectAssignee: `(//span[@class='Box-sc-g0xbh4-0 avjpQ'])[1]`,
   bulkStatus: `(//span[text()='Not Started'])[2]`,
   bulkStatusDropdown: `//span[text()='Set Status']`,
-  searchFieldInLinkProject: `//input[@name='Search']`,
+  searchFieldInLinkProject: `//input[@placeholder='Find a test run...']`,
   testplanBackButton: `//span[text()='Test Plans']`,
   createdTestrunAppear: (name: string) => `//a[text()="${name}"]`,
   createdTestrunAppearDashboard: (name: string) => `//span[text()="${name}"]`,
