@@ -113,12 +113,16 @@ export class TestRunPage extends BasePage {
   async deleteTestRun(name?: string): Promise<void> {
     await test.step(`Delete test run ${name ?? this.testRunName}`, async () => {
       const runName = name ?? this.testRunName;
+      // Navigate back to test runs list if inside a test run detail page
+      if (!(await this.isVisible(L.searchFieldInLinkProject, TIMEOUTS.short))) {
+        await clickAndWaitForNetwork(this.page, this.loc(L.backtoTestRunList));
+        await waitForNetworkIdle(this.page);
+      }
       await fillAndWaitForSearch(this.page, this.loc(L.searchFieldInLinkProject), runName);
       if (await this.isVisible(L.createdTestrunAppear(runName))) {
         await this.loc(L.createdTestrunOpenMenu(runName)).click();
         await this.loc(L.deleteInsideTR).click();
-        await this.loc(L.testRunTitle).fill('DELETE');
-        await this.loc(L.deleteTestRunCta).click();
+        await this.loc(L.testrunDeleteButton).click();
         await expect.soft(this.loc(L.createdTestrunAppear(runName))).not.toBeVisible({ timeout: TIMEOUTS.medium });
       }
     });
@@ -126,21 +130,33 @@ export class TestRunPage extends BasePage {
 
   async archiveTestRun(): Promise<void> {
     await test.step('Archive test run', async () => {
+      // Navigate back to test runs list if inside a test run detail page
+      if (!(await this.isVisible(L.searchFieldInLinkProject, TIMEOUTS.short))) {
+        await clickAndWaitForNetwork(this.page, this.loc(L.backtoTestRunList));
+        await waitForNetworkIdle(this.page);
+      }
+      await expect(this.loc(L.createdTestrunAppear(this.testRunName))).toBeVisible({ timeout: TIMEOUTS.long });
       await this.loc(L.createdTestrunOpenMenu(this.testRunName)).click();
+      await expect(this.loc(L.archiveTestRun)).toBeVisible({ timeout: TIMEOUTS.medium });
       await this.loc(L.archiveTestRun).click();
-      await this.loc(L.archiveTestRun).click();
-      await expect.soft(this.loc(L.archivedTestRun)).toBeVisible({ timeout: TIMEOUTS.medium });
+      await waitForNetworkIdle(this.page);
+      // Verify the test run is removed from active view after archiving
+      await expect.soft(this.loc(L.createdTestrunAppear(this.testRunName))).not.toBeVisible({ timeout: TIMEOUTS.medium });
     });
   }
 
   async duplicateTestRun(): Promise<void> {
     await test.step('Duplicate test run', async () => {
+      // Navigate back to test runs list if inside a test run detail page
+      if (!(await this.isVisible(L.searchFieldInLinkProject, TIMEOUTS.short))) {
+        await clickAndWaitForNetwork(this.page, this.loc(L.backtoTestRunList));
+        await waitForNetworkIdle(this.page);
+      }
+      await fillAndWaitForSearch(this.page, this.loc(L.searchFieldInLinkProject), this.testRunName, this.loc(L.createdTestrunAppear(this.testRunName)));
       await this.loc(L.createdTestrunOpenMenu(this.testRunName)).click();
-      await this.loc(L.duplicateTestRun).click();
-      this.newTestRunName = `Duplicate_${this.testRunName}`;
-      await this.loc(L.testRunTitle).fill(this.newTestRunName);
-      await this.loc(L.saveTestRunCta).click();
-      await expect.soft(this.loc(L.createdTestrunAppear(this.newTestRunName))).toBeVisible({ timeout: TIMEOUTS.long });
+      await clickAndWaitForNetwork(this.page, this.loc(L.duplicateTestRun));
+      // Duplicate creates a copy and navigates into its detail page
+      await expect.soft(this.page.locator(`//*[contains(text(),'Copy of ${this.testRunName}')]`).first()).toBeVisible({ timeout: TIMEOUTS.long });
     });
   }
 
