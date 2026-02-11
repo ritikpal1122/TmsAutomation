@@ -1,4 +1,6 @@
 import { test, expect } from '../../src/fixtures/tms.fixture.js';
+import { randomString } from '../../src/utils/random.helper.js';
+import { RANDOM_LENGTH } from '../../src/config/constants.js';
 
 test.describe('Test Run Execution', {
   tag: ['@regression'],
@@ -6,41 +8,58 @@ test.describe('Test Run Execution', {
     { type: 'feature', description: 'Test Run Management' },
     { type: 'severity', description: 'critical' },
     { type: 'story', description: 'PT-14247613' },
-  ],
+  ],  
 }, () => {
-  test('should run test run manually, mark test case and test steps status, and verify history', async ({ page, projectPage, testCasePage, testRunPage }) => {
-    // Step 1: Create project and open it
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should execute test run manually, mark test case and step statuses, and verify run status', async ({ projectOnly, projectPage, testCasePage, testRunPage }) => {
+    const tc1Title = testCasePage.testCaseTitle;
+    const tc2Title = testCasePage.newTestCaseTitle;
+    const step1Desc = `Step1_${randomString(RANDOM_LENGTH.standard)}`;
+    const step1Outcome = `Outcome1_${randomString(RANDOM_LENGTH.standard)}`;
+    const step2Desc = `Step2_${randomString(RANDOM_LENGTH.standard)}`;
+    const step2Outcome = `Outcome2_${randomString(RANDOM_LENGTH.standard)}`;
 
-    // Step 2: Create multiple test cases with steps
-    await testCasePage.createTestCase();
-    await testCasePage.openTestCase();
-    await testCasePage.createManualStep('Step 1 description', 'Expected outcome 1');
+    // Create TC1 with test step
+    await testCasePage.createTestCase(tc1Title);
+    await testCasePage.openTestCase(tc1Title);
+    await testCasePage.createManualStep(step1Desc, step1Outcome);
+
+    // Navigate back to project and create TC2 with test step
     await projectPage.backToProjectList();
     await projectPage.openProject();
+    await testCasePage.createTestCase(tc2Title);
+    await testCasePage.openTestCase(tc2Title);
+    await testCasePage.createManualStep(step2Desc, step2Outcome);
 
-    const secondTitle = `AutoTC_Second`;
-    await testCasePage.createTestCase(secondTitle);
-    await testCasePage.openTestCase(secondTitle);
-    await testCasePage.createManualStep('Step 2 description', 'Expected outcome 2');
+    // Navigate back to project and create test run
     await projectPage.backToProjectList();
     await projectPage.openProject();
-
-    // Step 3: Create test run
     await testRunPage.createTestRun();
 
-    // Step 4: Open test run
+    // Open test run and verify both TCs in instances
     await testRunPage.openTestRun();
+    await testRunPage.verifyTestCasesInInstances(tc1Title, tc2Title);
 
-    // Step 5: Mark test case status - Passed for first, Failed for second
+    // Open TC1, mark step as Passed, go back to instances
+    await testRunPage.openTestCaseInInstances(tc1Title);
+    await testRunPage.markStepStatus(step1Desc, 'Passed');
+    await testRunPage.backToInstances();
+
+    // Mark TC1 overall status as Passed
     await testRunPage.markStatus('Passed');
+
+    // Open TC2, mark step as Skipped, go back to instances
+    await testRunPage.openTestCaseInInstances(tc2Title);
+    await testRunPage.markStepStatus(step2Desc, 'Skipped');
+    await testRunPage.backToInstances();
+
+    // Mark TC2 overall status as Failed
     await testRunPage.markStatus('Failed');
 
-    // Step 6: Verify test run status
-    await testRunPage.verifyTestRunStatus('In Progress');
+    // Verify manual run remark
+    await testRunPage.verifyManualRunRemark();
 
-    // Step 7: Back to project list and cleanup
-    await projectPage.deleteProject();
+    // Mark test run overall status to Passed
+    await testRunPage.markTestRunOverallStatus();
+
   });
 });

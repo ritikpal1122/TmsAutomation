@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 export const ConfigurationLocators = {
   // Configuration navigation
   configurationNav: `//a[text()='Configurations']`,
@@ -5,7 +7,7 @@ export const ConfigurationLocators = {
 
   // Create configuration
   createConfigCta: `//button[contains(.,'Create') and contains(.,'Configuration')]`,
-  createConfigButton: `//span[text()='Create']`,
+  createConfigButton: C.createSpan,
   createConfigurationButton: `//button[contains(.,'Create') and contains(.,'Configuration')]`,
   configName: `input[placeholder='Enter Configuration name']`,
   configurationNameInput: `input[placeholder='Enter Configuration name']`,
@@ -44,17 +46,17 @@ export const ConfigurationLocators = {
   selectTablet: `//span[text()='Tablet']`,
 
   // Configuration actions
-  editConfig: `//span[text()='Edit']`,
-  editConfigurationButton: `//span[text()='Edit']`,
-  deleteConfig: `//span[text()='Delete']`,
-  deleteConfigurationButton: `//span[text()='Delete']`,
+  editConfig: C.editSpan,
+  editConfigurationButton: C.editSpan,
+  deleteConfig: C.deleteSpan,
+  deleteConfigurationButton: C.deleteSpan,
   deleteConfigConfirmation: `//span[text()='Delete Configuration']`,
-  deleteConfigurationConfirmInput: `//input[@placeholder='Type DELETE to confirm']`,
-  deleteConfigurationConfirm: `//button[text()='Delete']`,
-  configDeleteButton: `//span[text()='Delete']`,
-  duplicateConfig: `//span[text()='Duplicate']`,
-  duplicateConfigurationButton: `//span[text()='Duplicate']`,
-  duplicateConfigurationConfirm: `//button[text()='Duplicate']`,
+  deleteConfigurationConfirmInput: C.typeDeleteInput,
+  deleteConfigurationConfirm: C.deleteConfirmButton,
+  configDeleteButton: C.deleteSpan,
+  duplicateConfig: C.duplicateSpan,
+  duplicateConfigurationButton: C.duplicateSpan,
+  duplicateConfigurationConfirm: C.duplicateConfirmButton,
 
   // Configuration list
   searchConfig: `//input[@placeholder='Search Configurations']`,
@@ -74,6 +76,24 @@ export const ConfigurationLocators = {
   selectConfigInExecution: `//span[text()='Select Configuration']`,
   applyConfig: `//span[text()='Apply']`,
   configApplied: `//div[contains(@class,'config-applied')]`,
+
+  // Falcon platform
+  falconPlatformTab: `//span[text()='Falcon']`,
+  falconOsDropdown: `//*[text()='Operating system']/following-sibling::button`,
+  falconOsVersionDropdown: `//*[text()='OS version']/following-sibling::button`,
+  falconBrowserDropdown: `//*[text()='Browser']/following-sibling::button`,
+  falconBrowserVersionDropdown: `//*[text()='Browser version']/following-sibling::button`,
+  falconResolutionDropdown: `//*[text()='Resolution']/following-sibling::button`,
+
+  // Real Device platform
+  realDevicePlatformTab: `//span[text()='Real Device']`,
+  manufacturerDropdown: `//*[text()='Manufacturer']/following-sibling::button`,
+  deviceNameDropdown: `//*[text()='Device name']/following-sibling::button`,
+  realDeviceOsVersionDropdown: `//*[text()='OS version']/following-sibling::button`,
+
+  // Dynamic selectors for Falcon / Real Device
+  selectManufacturer: (manufacturer: string) => `//span[text()='${manufacturer}']`,
+  selectDeviceName: (device: string) => `//span[text()='${device}']`,
 
   // Dynamic locators
   createdConfig: (name: string) => `//a[text()='${name}']`,

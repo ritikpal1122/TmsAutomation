@@ -11,9 +11,7 @@ test.describe('Insights Mixed Status', {
    * Basic validation - verify insights values are non-negative
    * Creates a project for clean validation
    */
-  test('should verify insights values with mixed test case statuses', async ({ page, projectPage, insightsPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should verify insights values with mixed test case statuses', async ({ projectOnly, insightsPage }) => {
     await insightsPage.navigateToInsights();
     const total = await insightsPage.getTotalTestCases();
     const manual = await insightsPage.getManualTestCases();
@@ -21,8 +19,6 @@ test.describe('Insights Mixed Status', {
     expect(parseInt(total)).toBeGreaterThanOrEqual(0);
     expect(parseInt(manual)).toBeGreaterThanOrEqual(0);
     expect(parseInt(automated)).toBeGreaterThanOrEqual(0);
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
   /**
@@ -41,16 +37,13 @@ test.describe('Insights Mixed Status', {
    * 6. Cleanup - delete the project
    */
   test('should verify Insights with different test instance statuses and test case types', async ({
+    projectOnly,
     page,
     projectPage,
     testCasePage,
     testRunPage,
     insightsPage,
   }) => {
-    // Step 1: Create a new project
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-
     // Step 2: Create test cases with different types
     // Create first Functional test case
     const functionalTC1 = `FunctionalTC1_${Date.now()}`;
@@ -108,39 +101,32 @@ test.describe('Insights Mixed Status', {
     // Validate chart sections are visible
     await insightsPage.verifyChartSectionsVisible();
 
-    // Validate Test Run Summary shows different statuses (visual validation)
-    await insightsPage.verifyTestRunSummaryStatusInstancesVisible();
+    // Validate Test Run Summary shows count per status
+    await insightsPage.verifyTestRunSummaryPassedCount('1');
+    await insightsPage.verifyTestRunSummaryFailedCount('1');
+    await insightsPage.verifyTestRunSummarySkippedCount('1');
 
-    // Validate Test Case Summary shows types (visual validation)
-    await insightsPage.verifyTestCaseSummaryTypesVisible();
+    // Validate Test Case Summary shows type counts
+    await insightsPage.verifyTestCaseSummaryTypeCount('Functional', '2');
+    await insightsPage.verifyTestCaseSummaryTypeCount('Integration', '1');
 
-    // Step 6: Cleanup - Delete the project
-    await projectPage.deleteProject();
   });
 
   /**
    * Verify Test Run Summary displays status instances on Insights page
    * Creates a project for clean validation
    */
-  test('should verify Test Run Summary displays status instances', async ({ page, projectPage, insightsPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should verify Test Run Summary displays status instances', async ({ projectOnly, insightsPage }) => {
     await insightsPage.navigateToInsights();
     await insightsPage.verifyTestRunSummaryStatusInstancesVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
   /**
    * Verify Test Case Summary shows test case types
    * Creates a project for clean validation
    */
-  test('should verify Test Case Summary shows test case types', async ({ page, projectPage, insightsPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should verify Test Case Summary shows test case types', async ({ projectOnly, insightsPage }) => {
     await insightsPage.navigateToInsights();
     await insightsPage.verifyTestCaseSummaryTypesVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

@@ -8,7 +8,8 @@ test.describe('Configuration CRUD', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should create a Windows web browser configuration', async ({ page, configPage }) => {
+  test.describe.configure({ mode: 'serial' });
+  test('should create a Windows web browser configuration' , async ({ page, configPage }) => {
     await page.goto(EnvConfig.tmsBaseUrl + '/configurations');
     await configPage.createWindowsConfiguration();
     await configPage.verifyConfigurationExists(configPage.configurationName);

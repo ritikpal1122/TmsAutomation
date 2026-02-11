@@ -1,4 +1,5 @@
-import { test, expect } from '../../src/fixtures/tms.fixture.js';
+import { test } from '../../src/fixtures/tms.fixture.js';
+import { setupReportProject, configureReportFilters, generateAndVerifyReport } from '../../src/helpers/report-test.helper.js';
 
 test.describe('Report - Test Runs Filter', {
   tag: ['@regression'],
@@ -7,15 +8,11 @@ test.describe('Report - Test Runs Filter', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should create a report with test runs filter', async ({ page, projectPage, reportPage }) => {
-    await projectPage.openProject(projectPage.projectName);
-    await reportPage.openReportsTab();
-    await reportPage.startReportCreation('Detailed Execution History');
-    await reportPage.enterReportName();
-    await reportPage.enterReportDescription();
-    await reportPage.selectTestRunsFilter();
-    await reportPage.clickContinue();
-    await reportPage.clickGenerateReport();
-    await reportPage.verifyReportCreated();
+  test('should create a report with test runs filter', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
+    const opts = { projectPage, testCasePage, testRunPage, reportPage, primaryFilter: 'testRuns' as const, filters: [] };
+    await setupReportProject(opts);
+    await configureReportFilters(opts);
+    await generateAndVerifyReport(reportPage);
+    await projectPage.deleteProject();
   });
 });

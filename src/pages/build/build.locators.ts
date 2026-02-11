@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 export const BuildLocators = {
   buildNav: `//a[text()='Builds']`,
   createBuildCta: `//span[text()='Create Build']`,
@@ -15,7 +17,7 @@ export const BuildLocators = {
   saveBuildButton: `(//span[text()='Update'])[1]`,
   duplicateBuild: `//span[text()='Duplicate Build']`,
   duplicateBuildButton: `//span[text()='Duplicate Build']`,
-  duplicateBuildConfirm: `//button[text()='Duplicate']`,
+  duplicateBuildConfirm: C.duplicateConfirmButton,
   editBuild: `//span[text()='Edit Build']`,
   editBuildButton: `//span[text()='Edit Build']`,
   buildHistoryNav: `//a[text()='Build History']`,
@@ -23,15 +25,15 @@ export const BuildLocators = {
   buildHistoryTable: `//table`,
   buildHistoryEntries: `//table//tbody//tr`,
   testrunHistoryToday: `//span[text()='Today']`,
-  buildHistoryStatus: `//span[text()='Passed']`,
+  buildHistoryStatus: C.passedSpan,
   executionHistoryPassed: `//span[@aria-label='Passed']`,
   executionHistoryFailed: `//span[@aria-label="Failed"]`,
   buildPageBack: `//span[text()="Builds"]`,
   launchVariableCtaBuild: `//a[text()='Launch variables missing']`,
   searchBuildInput: `//input[@placeholder='Search Builds']`,
   deleteBuildButton: `//span[text()='Delete Build']`,
-  deleteBuildConfirmInput: `//input[@placeholder='Type DELETE to confirm']`,
-  deleteBuildConfirm: `//button[text()='Delete']`,
+  deleteBuildConfirmInput: C.typeDeleteInput,
+  deleteBuildConfirm: C.deleteConfirmButton,
   createdBuild: (name: string) => `//a[.//div[text()='${name}']]`,
   createdBuildAppear: (name: string) => `//span[text()="${name}"]`,
   createdBuildEdit: (name: string) => `//div[div[div[span[div[button[a[text()='${name}']]]]]]]//button`,

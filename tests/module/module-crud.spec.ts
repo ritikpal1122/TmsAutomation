@@ -14,13 +14,8 @@ test.describe('Module CRUD', {
     await modulePage.verifyModuleCreated();
   });
 
-  test('should insert a module into test case', async ({ page, projectPage, testCasePage, modulePage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
+  test('should insert a module into test case', async ({ projectWithTestCase, testCasePage, modulePage }) => {
     await testCasePage.openTestCase();
     await modulePage.insertModule();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

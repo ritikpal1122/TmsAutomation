@@ -7,16 +7,11 @@ test.describe('Build CRUD', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should create, edit, duplicate, and verify build', async ({ page, projectPage, testCasePage, testRunPage, buildPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
+  test('should create, edit, duplicate, and verify build', async ({ projectWithTestCase, testRunPage, buildPage }) => {
     await testRunPage.createTestRun();
     await buildPage.createBuild();
     await buildPage.verifyBuildCreated();
     await buildPage.editBuild();
     await buildPage.duplicateBuild();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

@@ -37,15 +37,12 @@ test.describe('Milestone CRUD with TestRun Integration', {
    * 24. Delete project
    */
   test('should perform full milestone CRUD with TestRun integration', async ({
+    projectOnly,
     projectPage,
     testCasePage,
     testRunPage,
     milestonePage,
   }) => {
-    // Step 1-2: Create project with title, tag, description and open it
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-
     // Step 3: Create multiple test cases with steps
     await testCasePage.createTestCase();
     await testCasePage.openTestCase();
@@ -129,7 +126,5 @@ test.describe('Milestone CRUD with TestRun Integration', {
     await milestonePage.deleteMilestone();
     await milestonePage.verifyMilestoneDeletedSuccessfully();
 
-    // Step 24: Delete project
-    await projectPage.deleteProject();
   });
 });

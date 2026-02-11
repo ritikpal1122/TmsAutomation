@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 /**
  * Locators for Test Manager Reports functionality
  * Includes Detailed Execution History and Traceability Reports
@@ -42,7 +44,7 @@ export const ReportLocators = {
   continueBtn: `//button[normalize-space()='Continue']`,
   continueBtnDisabled: `//button[@disabled and normalize-space()='Continue']`,
   generateBtn: `//button[normalize-space()='Generate Report']`,
-  saveBtn: `//button[normalize-space()='Save']`,
+  saveBtn: C.saveNormalizedButton,
 
   // ============== PRIMARY FILTERS ==============
   primaryFiltersLabel: `//text()[contains(.,'Primary Filters')]/..`,
@@ -134,7 +136,7 @@ export const ReportLocators = {
 
   // ============== REPORT MENU ==============
   reportItemMenu: `//button[@aria-label='Open Menu, Press Enter to view']`,
-  reportDeleteOption: `//span[text()='Delete']`,
+  reportDeleteOption: C.deleteSpan,
 
   // ============== TOAST MESSAGES ==============
   reportCreatedToast: `//*[contains(text(),'Report created') or contains(text(),'successfully')]`,

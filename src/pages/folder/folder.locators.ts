@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 export const FolderLocators = {
   createFolderMainCta: `//button[contains(.,'Create New Folder')]`,
   createFolderButton: `//button[contains(.,'Create New Folder')]`,
@@ -9,10 +11,10 @@ export const FolderLocators = {
   createAnotherFolder: `//*[contains(@class,'octicon octicon-plus')]//parent::button`,
   subFolderTitleField: `//input[@placeholder='Enter folder name']`,
   defaultFolderName: `(//span[text()='Untitled'])[1]`,
-  deleteFolderConfirmation: `//span[text()='Delete']`,
+  deleteFolderConfirmation: C.deleteSpan,
   deleteFolderButton: `//span[text()='Delete Folder']`,
-  deleteFolderConfirmInput: `//input[@placeholder='Type DELETE to confirm']`,
-  deleteFolderConfirm: `//button[text()='Delete']`,
+  deleteFolderConfirmInput: C.typeDeleteInput,
+  deleteFolderConfirm: C.deleteConfirmButton,
   renameFolder: `//span[text()='Rename']`,
   renameFolderButton: `//span[text()='Rename']`,
   saveFolderButton: `//button[text()='Save']`,

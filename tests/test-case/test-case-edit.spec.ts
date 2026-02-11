@@ -10,19 +10,10 @@ test.describe('Test Case Edit', {
     { type: 'severity', description: 'critical' },
   ],
 }, () => {
-  test('should edit test case with fields, attachment, tag, and create test steps', async ({ projectPage, testCasePage }) => {
+  test('should edit test case with fields, attachment, tag, and create test steps', async ({ projectWithTestCase, projectPage, testCasePage }) => {
     const { testStep, testStepOutcome, testCaseTag } = testCasePage;
     const sampleAttachmentPath = path.resolve('src/data', TEST_DATA.sampleAttachment);
     const screenshotPath = path.resolve('src/data', TEST_DATA.screenshotFile);
-
-    // Step 1-2: Create a project with title, tag, and description
-    await projectPage.createProjectWithTagDescription();
-
-    // Step 3: Open created project
-    await projectPage.openProject();
-
-    // Step 4: Create a test case
-    await testCasePage.createTestCase();
 
     // Step 5: Open created test case
     await testCasePage.openTestCase();
@@ -62,10 +53,10 @@ test.describe('Test Case Edit', {
     // Step 15: Verify test case TC ID is visible
     await expect(testCasePage.loc(L.tcId)).toBeVisible({ timeout: TIMEOUTS.long });
 
+    // Step 17 : Delete test case
+    await testCasePage.deleteTestCase();
+
     // Step 16: Back to project list
     await projectPage.backToProjectList();
-
-    // Step 17: Cleanup - delete the created project
-    await projectPage.deleteProject();
   });
 });

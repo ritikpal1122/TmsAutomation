@@ -9,14 +9,8 @@ test.describe('CSV Import - BDD', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should import BDD CSV and verify test case and folder', async ({ projectPage, csvImportPage }) => {
+  test('should import BDD CSV and verify test case and folder', async ({ projectOnly, csvImportPage }) => {
     const bddCsvPath = path.resolve('src/data', TEST_DATA.sampleBddCsvFile);
-
-    // Step 1: Create project with tag and description
-    await projectPage.createProjectWithTagDescription();
-
-    // Step 2: Open created project
-    await projectPage.openProject();
 
     // Step 3: Upload BDD CSV file
     await csvImportPage.uploadBddCsv(bddCsvPath);
@@ -32,8 +26,5 @@ test.describe('CSV Import - BDD', {
 
     // Step 5: Verify imported test case is visible
     await csvImportPage.verifyImportedTestCase();
-
-    // Step 6: Cleanup - delete the created project
-    await projectPage.deleteProject();
   });
 });
