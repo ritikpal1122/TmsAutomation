@@ -9,15 +9,11 @@ test.describe('Folder/Sub-Folder CRUD with Test Cases', {
   ],
 }, () => {
   test('should create, rename, and delete folder and sub-folder with test cases', async ({
+    projectOnly,
     page,
-    projectPage,
     testCasePage,
     folderPage,
   }) => {
-    // Step 1: Create project and open it
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-
     // Step 2: Create folder
     await folderPage.createFolder();
     await folderPage.verifyFolderExists(folderPage.folderName);
@@ -43,8 +39,5 @@ test.describe('Folder/Sub-Folder CRUD with Test Cases', {
     // Step 8: Delete folder, verify deleted
     await folderPage.deleteFolder(folderPage.folderName);
     await folderPage.verifyFolderDeleted(folderPage.folderName);
-
-    // Step 9: Cleanup - delete project
-    await projectPage.deleteProject();
   });
 });

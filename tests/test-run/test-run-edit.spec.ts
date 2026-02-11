@@ -8,21 +8,22 @@ test.describe('Edit Test Run', {
     { type: 'story', description: 'PT-14238439' },
   ],
 }, () => {
-  test('should edit a test run name', async ({ page, projectPage, testCasePage, testRunPage }) => {
-    // Step 1: Create project and open it
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should edit test run to add a new test case and verify both test cases', async ({ projectWithTestCase, projectPage, testCasePage, testRunPage }) => {
 
-    // Step 2: Create test case and test run
-    await testCasePage.createTestCase();
+    // Create test run (picks up TC1)
     await testRunPage.createTestRun();
 
-    // Step 3: Edit test run name
-    await testRunPage.editTestRun();
+    // Navigate back to test case page and create second test case
+    await projectPage.backToProjectList();
+    await projectPage.openProject();
+    const newTcTitle = testCasePage.newTestCaseTitle;
+    await testCasePage.createTestCase(newTcTitle);
 
-    // Step 4: Verify edited test run appears (handled inside editTestRun via expect assertion)
+    // Edit test run to add new test case
+    await testRunPage.editTestRunAddTestCase(testCasePage.testCaseTitle, newTcTitle);
 
-    // Step 5: Cleanup - delete project
-    await projectPage.deleteProject();
+    // Verify both test cases visible in instances
+    await testRunPage.verifyTestCasesInInstances(testCasePage.testCaseTitle, newTcTitle);
+
   });
 });

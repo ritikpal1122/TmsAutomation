@@ -55,6 +55,12 @@ type TmsFixtures = {
   toast: ToastComponent;
   deleteDialog: DeleteDialogComponent;
   search: SearchComponent;
+  /** Auto-creates project + opens it; auto-deletes project on teardown */
+  projectOnly: void;
+  /** Auto-creates project + test case; auto-deletes project on teardown */
+  projectWithTestCase: void;
+  /** Auto-creates project + folder + test case inside folder; auto-deletes project on teardown */
+  projectWithTestCaseInFolder: void;
 };
 
 export const test = base.extend<TmsFixtures>({
@@ -136,6 +142,28 @@ export const test = base.extend<TmsFixtures>({
     const { setup, cleanup } = createApiSetup(tmsApi);
     await use(setup);
     await cleanup();
+  },
+  projectOnly: async ({ projectPage }, use) => {
+    await projectPage.createProjectWithTagDescription();
+    await projectPage.openProject();
+    await use();
+    await projectPage.deleteProject();
+  },
+  projectWithTestCase: async ({ projectPage, testCasePage }, use) => {
+    await projectPage.createProjectWithTagDescription();
+    await projectPage.openProject();
+    await testCasePage.createTestCase();
+    await use();
+    await projectPage.deleteProject();
+  },
+  projectWithTestCaseInFolder: async ({ projectPage, testCasePage, folderPage }, use) => {
+    await projectPage.createProjectWithTagDescription();
+    await projectPage.openProject();
+    await folderPage.createFolder();
+    await folderPage.openFolder(folderPage.folderName);
+    await testCasePage.createTestCase();
+    await use();
+    await projectPage.deleteProject();
   },
 });
 

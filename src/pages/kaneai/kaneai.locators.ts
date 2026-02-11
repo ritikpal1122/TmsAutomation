@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 /**
  * Locators for KaneAI functionality in Test Manager
  */
@@ -17,7 +19,7 @@ export const KaneaiLocators = {
   saveTestcaseAuthoring: `//span[contains(text(), 'Save Test Case')]`,
   code: `//span[contains(text(), 'Code')]`,
   viewDetailsCode: `//h5[contains(text(), 'View details')]`,
-  initialPromptChevron: `//span[text()='Initial prompt']//following-sibling::div//*[contains(@class, 'octicon-chevron-right')]`,
+  initialPromptChevron: C.initialPromptChevron,
   initialPromptExpanded: `//span[text()='Initial prompt']//following-sibling::div//*[contains(@class, 'octicon-chevron-down')]`,
   testCasesButton: `//button[contains(.,'test cases')]`,
   testCasesTabCount: `//span[contains(., 'Test Cases')]//following-sibling::span[contains(@class, 'CounterLabel')]`,

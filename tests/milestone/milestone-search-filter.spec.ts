@@ -25,14 +25,9 @@ test.describe('Milestone Search, Filter, and Mark Complete', {
    * 12. Delete project
    */
   test('should search, filter, and mark milestone as complete', async ({
-    projectPage,
-    testCasePage,
+    projectWithTestCase,
     milestonePage,
   }) => {
-    // Step 1: Create project, open project, create test cases
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
 
     // Step 2: Open Milestones tab
     await milestonePage.openMilestonesTab();
@@ -69,7 +64,5 @@ test.describe('Milestone Search, Filter, and Mark Complete', {
     await milestonePage.openCreatedMilestone();
     await milestonePage.deleteMilestone();
 
-    // Step 12: Delete project
-    await projectPage.deleteProject();
   });
 });

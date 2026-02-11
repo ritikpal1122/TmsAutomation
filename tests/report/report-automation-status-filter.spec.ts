@@ -1,4 +1,5 @@
-import { test, expect } from '../../src/fixtures/tms.fixture.js';
+import { test } from '../../src/fixtures/tms.fixture.js';
+import { setupReportProject, configureReportFilters, generateAndVerifyReport } from '../../src/helpers/report-test.helper.js';
 
 test.describe('Report - Automation Status Filter', {
   tag: ['@regression'],
@@ -7,38 +8,11 @@ test.describe('Report - Automation Status Filter', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should create a report with automation status filter', async ({ page, projectPage, testCasePage, testRunPage, reportPage }) => {
-    // Setup: create project, test case, and test run
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
-    await testRunPage.createTestRun();
-
-    // Navigate to Reports
-    await reportPage.openReportsTab();
-
-    // Create Detailed Execution History report with date range
-    await reportPage.startReportCreation('Detailed Execution History');
-    await reportPage.enterReportName();
-    await reportPage.enterReportDescription();
-    await reportPage.selectDateRangeFilter();
-    await reportPage.selectDateRangePreset('Last 30 Days');
-
-    // Add automation status filter (Not Automated)
-    await reportPage.enableTestCasesFilter();
-    await reportPage.selectAutomationStatusFilter();
-    await reportPage.setAutomationStatusFilterValue('Not Automated');
-
-    // Generate and verify
-    await reportPage.clickContinue();
-    await reportPage.clickGenerateReport();
-    await reportPage.pollForReportGeneration();
-    await reportPage.verifyReportCreated();
-    await reportPage.searchCreatedReport();
-    await reportPage.openCreatedReport();
-    await reportPage.verifyReportTestCaseCount(1);
-
-    // Cleanup
+  test('should create a report with automation status filter', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
+    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'AutomationStatus', value: 'Not Automated' }] };
+    await setupReportProject(opts);
+    await configureReportFilters(opts);
+    await generateAndVerifyReport(reportPage, 1);
     await projectPage.deleteProject();
   });
 });

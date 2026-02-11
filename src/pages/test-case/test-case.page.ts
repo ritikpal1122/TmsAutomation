@@ -144,11 +144,11 @@ export class TestCasePage extends BasePage {
     });
   }
 
-  async addScenario(scenarioText: string): Promise<void> {
-    await test.step('Add scenario', async () => {
+  async addScenario(scenarioText: string, { isNew = false } = {}): Promise<void> {
+    await test.step(isNew ? 'Add another scenario' : 'Add scenario', async () => {
+      if (isNew) await this.loc(L.addScenarioButton).click();
       await this.loc(L.scenarioField).click();
       // Monaco editor requires JS to type text
-      const escaped = scenarioText.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
       await this.page.evaluate((text) => {
         const editors = (window as any).monaco?.editor?.getEditors();
         const editor = editors?.find((e: any) => e.hasTextFocus()) || editors?.[editors.length - 1];
@@ -157,31 +157,11 @@ export class TestCasePage extends BasePage {
       await this.loc(L.addScenarioCta).click();
       await this.page.waitForTimeout(1000);
     });
-  }
-
-  async addAnotherScenario(scenarioText: string): Promise<void> {
-    await test.step('Add another scenario', async () => {
-      await this.loc(L.addScenarioButton).click();
-      await this.loc(L.scenarioField).click();
-      await this.page.evaluate((text) => {
-        const editors = (window as any).monaco?.editor?.getEditors();
-        const editor = editors?.find((e: any) => e.hasTextFocus()) || editors?.[editors.length - 1];
-        editor?.trigger('keyboard', 'type', { text });
-      }, scenarioText);
-      await this.loc(L.addScenarioCta).click();
-      await this.page.waitForTimeout(1000);
-    });
-  }
-
-  async getScenarioCount(): Promise<number> {
-    await this.page.waitForTimeout(1000);
-    return this.loc(L.scenarioItems).count();
   }
 
   async verifyScenarioCount(expected: number): Promise<void> {
     await test.step(`Verify scenario count is ${expected}`, async () => {
-      const count = await this.getScenarioCount();
-      expect.soft(count).toBe(expected);
+      await expect.soft(this.loc(L.scenarioCount)).toHaveText(String(expected), { timeout: TIMEOUTS.medium });
     });
   }
 

@@ -1,0 +1,92 @@
+name: EU E2E Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: '@smoke'
+        type: choice
+        options:
+          - '@smoke'
+          - '@regression'
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'eu-stage'
+        type: choice
+        options:
+          - eu-stage
+          - eu-prod
+
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  schedule:
+    # Smoke: daily at 8:00 AM UTC
+    - cron: '0 8 * * *'
+    # Regression: weekly Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+
+jobs:
+  test:
+    name: EU ${{ github.event.inputs.environment || 'eu-stage' }} — ${{ github.event.inputs.test_suite || (github.event.schedule == '0 0 * * 0' && '@regression') || '@smoke' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ (github.event.inputs.test_suite == '@regression' || github.event.schedule == '0 0 * * 0') && 60 || 30 }}
+
+    env:
+      TEST_ENV: ${{ github.event.inputs.environment || 'eu-stage' }}
+      TEST_SUITE: ${{ github.event.inputs.test_suite || (github.event.schedule == '0 0 * * 0' && '@regression') || '@smoke' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run tests
+        run: node scripts/run-tests.js --env ${{ env.TEST_ENV }} --grep ${{ env.TEST_SUITE }} --retries 2
+        env:
+          LT_USERNAME: ${{ secrets.LT_USERNAME }}
+          LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
+          AUTH_EMAIL: ${{ secrets.EU_AUTH_EMAIL }}
+          AUTH_PASSWORD: ${{ secrets.EU_AUTH_PASSWORD }}
+          AUTH_TOKEN: ${{ secrets.EU_AUTH_TOKEN }}
+          CI: true
+
+      - name: Upload Playwright HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ env.TEST_ENV }}-${{ env.TEST_SUITE }}
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-${{ env.TEST_ENV }}-${{ env.TEST_SUITE }}
+          path: allure-results/
+          retention-days: 14
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ env.TEST_ENV }}-${{ env.TEST_SUITE }}
+          path: test-results/
+          retention-days: 7

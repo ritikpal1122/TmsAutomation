@@ -13,81 +13,53 @@ test.describe('Insights - Date Range Filter', {
    * Matches Java pattern for Insights date range validation
    */
   test('should verify Insights date range filter elements are visible', async ({
-    page,
+    projectWithTestCase,
     projectPage,
-    testCasePage,
     testRunPage,
     insightsPage,
   }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
     await testRunPage.createTestRun();
     await projectPage.openProject();
     await insightsPage.navigateToInsights();
-
-    // Verify date range filter elements
     await insightsPage.verifyDateRangeFilterVisible();
     await insightsPage.verifyRefreshButtonVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
   /**
    * Verify Insights data updates with custom date range
    */
   test('should verify Insights data with custom date range', async ({
-    page,
+    projectWithTestCase,
     projectPage,
-    testCasePage,
     testRunPage,
     insightsPage,
   }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
     await testRunPage.createTestRun();
     await projectPage.backToProjectList();
     await projectPage.openProject();
     await insightsPage.navigateToInsights();
-
-    // Set custom date range (last 30 days)
     await insightsPage.setDateRange(daysAgo(30), today());
     await insightsPage.refreshInsights();
-
-    // Verify insights data is loaded
     await insightsPage.verifyInsightsLabelsVisible();
     await insightsPage.verifyChartSectionsVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
   /**
    * Verify Insights data refresh after clicking refresh button
    */
   test('should verify Insights refresh button functionality', async ({
-    page,
+    projectWithTestCase,
     projectPage,
-    testCasePage,
     testRunPage,
     insightsPage,
   }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
     await testRunPage.createTestRun();
     await projectPage.backToProjectList();
     await projectPage.openProject();
     await insightsPage.navigateToInsights();
-
-    // Click refresh button
     await insightsPage.refreshInsights();
-
-    // Verify data is still visible after refresh
     await insightsPage.verifyInsightsLabelsVisible();
     await insightsPage.verifyChartSectionsVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
   /**
@@ -95,16 +67,12 @@ test.describe('Insights - Date Range Filter', {
    * Creates test data, validates metrics, and verifies date range functionality
    */
   test('should validate complete Insights flow with date range', async ({
-    page,
+    projectOnly,
     projectPage,
     testCasePage,
     testRunPage,
     insightsPage,
   }) => {
-    // Create a new project for clean data validation
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-
     // Create test cases - Manual and Automated
     const manualTC = `ManualTC_DateRange_${Date.now()}`;
     await testCasePage.createTestCase(manualTC);
@@ -145,7 +113,5 @@ test.describe('Insights - Date Range Filter', {
     // Validate all chart sections
     await insightsPage.verifyAllChartSectionsVisible();
 
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

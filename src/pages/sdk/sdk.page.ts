@@ -175,4 +175,32 @@ export class SdkPage extends BasePage {
       await this.page.waitForTimeout(2000);
     });
   }
+
+  async markStepStatusInCollapseMode(stepName: string, status: 'Passed' | 'Failed' | 'Skipped'): Promise<void> {
+    await test.step(`Mark step "${stepName}" status as ${status} in collapse mode`, async () => {
+      const collapseLocator = L.testStepsStatusCollapse(stepName);
+      await this.loc(collapseLocator).click();
+      if (status === 'Passed') {
+        await this.loc(L.tcStatusPassedSdk).click();
+      } else if (status === 'Failed') {
+        await this.loc(L.tcStatusFailedSdk).click();
+      } else {
+        await this.loc(`//span[text()='${status}']`).click();
+      }
+      await this.page.waitForTimeout(1000);
+    });
+  }
+
+  async verifyCollapseMode(): Promise<void> {
+    await test.step('Verify SDK is in collapse mode', async () => {
+      await expect.soft(this.loc(L.collapseToExpand)).toBeVisible({ timeout: TIMEOUTS.long });
+    });
+  }
+
+  async verifySessionEnded(): Promise<void> {
+    await test.step('Verify SDK session has ended', async () => {
+      // After ending session, the expand details button should reappear (redirect to run list)
+      await expect.soft(this.loc(L.sdkExpand)).not.toBeVisible({ timeout: TIMEOUTS.long });
+    });
+  }
 }

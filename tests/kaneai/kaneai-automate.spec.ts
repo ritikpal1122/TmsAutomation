@@ -7,17 +7,12 @@ test.describe('KaneAI Automate', {
     { type: 'severity', description: 'minor' },
   ],
 }, () => {
-  test('should automate test case with KaneAI', async ({ page, projectPage, testCasePage, kaneaiPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
+  test('should automate test case with KaneAI', async ({ projectWithTestCase, testCasePage, kaneaiPage }) => {
     await testCasePage.openTestCase();
     await kaneaiPage.automateWithKaneai();
     await kaneaiPage.selectDesktopBrowser();
     await kaneaiPage.startTesting();
     await kaneaiPage.approve();
     await kaneaiPage.saveTestCase();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

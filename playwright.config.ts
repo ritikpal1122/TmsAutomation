@@ -34,10 +34,10 @@ const AUTH_FILE = '.auth/user.json';
 
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? CI_CONFIG.retries : 0,
-  workers: process.env.CI ? CI_CONFIG.workers : undefined,
+  workers: process.env.CI ? CI_CONFIG.workers : 10,
   reporter: [
     ['html', { open: 'never' }],
     ['./src/reporters/step-reporter.ts'],

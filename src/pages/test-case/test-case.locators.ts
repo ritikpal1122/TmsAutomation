@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 export const TestCaseLocators = {
   createTestcaseCta: `//span[text()='Add Test Case']`,
   createTestcaseByField: `//span[text()='Add Test Case']`,
@@ -16,16 +18,16 @@ export const TestCaseLocators = {
   addStepOutout: `//p[@data-placeholder='Enter Step Outcome']`,
   aiButton: `//span[text()='Generate with AI']`,
   createStepCta: `//button[@id="new-step-manual"]`,
-  openMenu: `//button[@aria-label='Open menu']`,
+  openMenu: C.openMenuButton,
   verifyAiTeststep: `(//div[@class='reactjs-tiptap-editor'])[3]`,
   attachmentInTeststep: `(//button//*[local-name()='svg' and contains(@class,'lucide-image-up')])[1]`,
   attachmentInTeststepUpload: `(//button[text()='Upload'])[2]`,
   verifyAttachmentInTeststep: `//span[text()='Screenshot0.png']`,
   saveTestCase: `//span[contains(text(), 'Save Changes')]`,
   saveTestCaseCommitMessage: `(//span[contains(text(), 'Save Changes')])[2]`,
-  testcaseDeleteButton: `//span[text()='Delete']`,
-  testcaseDeleteOpenMenu: `//button[@aria-label='Open menu']`,
-  testcaseDeleteConfirmation: `//span[text()='Delete']`,
+  testcaseDeleteButton: C.deleteSpan,
+  testcaseDeleteOpenMenu: `(//button[@data-component='IconButton' and @aria-haspopup='true'])[1]`, // Need to update this 
+  testcaseDeleteConfirmation: C.deleteSpan,
   saveTestStep: `//span[contains(text(), 'Save Changes')]`,
   backFromEditTC: `//span[text()='Test details']`,
   testcaseBreadcrumb: `(//span[text()='Test Manager']//ancestor::button//following-sibling::div//button)[1]`,
@@ -60,16 +62,17 @@ export const TestCaseLocators = {
   createdTeststep: (title: string) => `//p[text()='${title}']`,
   createdTcTag: (tag: string) => `//div[text()='${tag}']`,
   // Scenario type locators
-  manualStepDropdown: `//span[text()='Manual Test Steps']`,
+  manualStepDropdown: `(//span[text()='Manual Test Steps'])[1]`, // Need to update this 
   scenarioTypeDropdown: `//span[text()='BDD Scenarios']`,
   scenarioTypeSelected: `//span[text()='Behaviour Driven Development']`,
   scenarioField: `(//div[@class='view-lines monaco-mouse-cursor-text'])[last()]`,
   addScenarioCta: `(//span[text()='Add scenario'])[2]`,
-  addScenarioButton: `//span[text()='Add scenario']`,
+  addScenarioButton: `(//span[text()='Add scenario'])[1]`, // Need to update this 
+  scenarioCount: `//span[@data-component='trailingVisual']//span[@aria-hidden='true']`,
   scenarioItems: `//span[@aria-label='Delete Scenario']`,
   scenarioDuplicate: `//*[name()='svg' and contains(@class, 'octicon-duplicate')]`,
   scenarioDelete: `//span[@aria-label='Delete Scenario']`,
-  scenarioDeleteConfirmation: `//span[text()='Delete']`,
+  scenarioDeleteConfirmation: C.deleteSpan,
   scenarioAccept: `//span[text()='Accept']`,
   scenarioReject: `//span[text()='Reject']`,
 } as const;

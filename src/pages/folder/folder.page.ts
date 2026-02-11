@@ -103,6 +103,22 @@ export class FolderPage extends BasePage {
     });
   }
 
+  async createTestCasesInsideFolder(folderName: string, testCasePage: { createTestCase: (title?: string) => Promise<void> }, count: number): Promise<void> {
+    await test.step(`Create folder "${folderName}" with ${count} test cases`, async () => {
+      await this.createFolder(folderName);
+      await this.openFolder(folderName);
+      for (let i = 1; i <= count; i++) {
+        await testCasePage.createTestCase(`${folderName}_TC_${i}`);
+      }
+    });
+  }
+
+  async verifyFolderTestCaseCount(folderName: string, expectedCount: string): Promise<void> {
+    await test.step(`Verify folder "${folderName}" shows count "${expectedCount}"`, async () => {
+      await expect.soft(this.loc(L.folderTestCaseCount(folderName))).toHaveText(expectedCount, { timeout: TIMEOUTS.medium });
+    });
+  }
+
   async openFolder(name: string): Promise<void> {
     await this.loc(L.createdFolder(name)).click();
     await expect.soft(this.loc(L.folderBreadcrumb(name))).toBeVisible({ timeout: TIMEOUTS.medium });

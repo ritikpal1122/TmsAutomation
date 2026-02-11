@@ -8,13 +8,7 @@ test.describe('Test Run With Configuration', {
     { type: 'story', description: 'PT-14178481' },
   ],
 }, () => {
-  test('should create a test run without assignee along with configuration', async ({ page, projectPage, testCasePage, testRunPage }) => {
-    // Step 1: Create project and open it
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-
-    // Step 2: Create test case
-    await testCasePage.createTestCase();
+  test('should create a test run without assignee along with configuration', async ({ projectWithTestCase, testRunPage }) => {
 
     // Step 3-4: Create test run with configuration (no assignee)
     await testRunPage.createTestRun();
@@ -24,7 +18,5 @@ test.describe('Test Run With Configuration', {
     // Step 5: Verify test run created
     await testRunPage.backToTestRunList();
 
-    // Step 6: Cleanup - delete project
-    await projectPage.deleteProject();
   });
 });

@@ -10,42 +10,21 @@ export function randomString(length: number = RANDOM_LENGTH.standard): string {
   return result;
 }
 
+/** Generic prefixed random name: `Prefix_xYzAbC` */
+export function randomNamed(prefix: string, length: number = RANDOM_LENGTH.medium): string {
+  return `${prefix}_${randomString(length)}`;
+}
+
 export function randomEmail(): string {
   return `test_${randomString(RANDOM_LENGTH.medium)}@automation.test`;
 }
 
-export function randomProjectName(): string {
-  return `AutoProject_${randomString(RANDOM_LENGTH.medium)}`;
-}
-
-export function randomTestCaseName(): string {
-  return `AutoTC_${randomString(RANDOM_LENGTH.medium)}`;
-}
-
-export function randomTestRunName(): string {
-  return `AutoTR_${randomString(RANDOM_LENGTH.medium)}`;
-}
-
-export function randomBuildName(): string {
-  return `AutoBuild_${randomString(RANDOM_LENGTH.medium)}`;
-}
-
-export function randomFolderName(): string {
-  return `AutoFolder_${randomString(RANDOM_LENGTH.medium)}`;
-}
-
-export function randomConfigName(): string {
-  return `AutoConfig_${randomString(RANDOM_LENGTH.medium)}`;
-}
-
-export function randomMilestoneName(): string {
-  return `AutoMilestone_${randomString(RANDOM_LENGTH.medium)}`;
-}
-
-export function randomReportName(): string {
-  return `AutoReport_${randomString(RANDOM_LENGTH.medium)}`;
-}
-
-export function randomModuleName(): string {
-  return `AutoModule_${randomString(RANDOM_LENGTH.medium)}`;
-}
+export function randomProjectName(): string { return randomNamed('AutoProject'); }
+export function randomTestCaseName(): string { return randomNamed('AutoTC'); }
+export function randomTestRunName(): string { return randomNamed('AutoTR'); }
+export function randomBuildName(): string { return randomNamed('AutoBuild'); }
+export function randomFolderName(): string { return randomNamed('AutoFolder'); }
+export function randomConfigName(): string { return randomNamed('AutoConfig'); }
+export function randomMilestoneName(): string { return randomNamed('AutoMilestone'); }
+export function randomReportName(): string { return randomNamed('AutoReport'); }
+export function randomModuleName(): string { return randomNamed('AutoModule'); }

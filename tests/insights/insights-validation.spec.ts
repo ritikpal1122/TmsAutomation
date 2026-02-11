@@ -14,14 +14,10 @@ test.describe('Insights Validation', {
    * Basic validation - verify Insights page elements are visible
    * Creates a project for clean validation
    */
-  test('should display insights labels and charts', async ({ page, projectPage, insightsPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should display insights labels and charts', async ({ projectOnly, insightsPage }) => {
     await insightsPage.navigateToInsights();
     await insightsPage.verifyInsightsLabelsVisible();
     await insightsPage.verifyChartSectionsVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
   /**
@@ -38,16 +34,12 @@ test.describe('Insights Validation', {
    * 7. Cleanup - delete the project
    */
   test('should verify Insights Dashboard metrics after creating test data', async ({
-    page,
+    projectOnly,
     projectPage,
     testCasePage,
     testRunPage,
     insightsPage,
   }) => {
-    // Step 1: Create a new project
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-
     // Step 2: Create a Manual test case (Not Automated)
     const manualTCTitle = `ManualTC_${Date.now()}`;
     await testCasePage.createTestCase(manualTCTitle);
@@ -90,52 +82,41 @@ test.describe('Insights Validation', {
     // Step 7: Validate chart sections are visible
     await insightsPage.verifyAllChartSectionsVisible();
 
-    // Step 8: Validate date range filter and refresh button visibility
+    // Step 8: Validate test run summary not started count (2 test instances, none executed)
+    await insightsPage.verifyTestRunSummaryNotStartedCount('2');
+
+    // Step 9: Validate date range filter and refresh button visibility
     await insightsPage.verifyDateRangeFilterVisible();
     await insightsPage.verifyRefreshButtonVisible();
 
-    // Step 9: Cleanup - Delete the project
-    await projectPage.deleteProject();
   });
 
   /**
    * Verify Insights page header elements
    * Creates a project for clean validation
    */
-  test('should verify Insights page header elements', async ({ page, projectPage, insightsPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should verify Insights page header elements', async ({ projectOnly, insightsPage }) => {
     await insightsPage.navigateToInsights();
     await insightsPage.verifyInsightsLabelsVisible();
     await insightsPage.verifyDateRangeFilterVisible();
     await insightsPage.verifyRefreshButtonVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
   /**
    * Verify all stat cards are visible on Insights page
    * Creates a project for clean validation
    */
-  test('should verify all stat cards are visible', async ({ page, projectPage, insightsPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should verify all stat cards are visible', async ({ projectOnly, insightsPage }) => {
     await insightsPage.navigateToInsights();
     await insightsPage.verifyInsightsLabelsVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
   /**
    * Verify all chart sections are visible on Insights page
    * Creates a project for clean validation
    */
-  test('should verify all chart sections are visible', async ({ page, projectPage, insightsPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should verify all chart sections are visible', async ({ projectOnly, insightsPage }) => {
     await insightsPage.navigateToInsights();
     await insightsPage.verifyAllChartSectionsVisible();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

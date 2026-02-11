@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 /**
  * Locators for Jira integration functionality in Test Manager
  */
@@ -8,7 +10,7 @@ export const JiraLocators = {
   closedJiraSidebar: `//button[@aria-label="Close Sidebar"]`,
   linkIssueButton: `//span[text()='Link Issue']`,
   linkFieldTms: `//input[@placeholder='Add Jira issue key or Issue URL']`,
-  initialPromptChevron: `//span[text()='Initial prompt']//following-sibling::div//*[contains(@class, 'octicon-chevron-right')]`,
+  initialPromptChevron: C.initialPromptChevron,
   todoJiraTitle: `//span[text()="This is To Do bug type"]`,
   todoJiraPriority: `//span[text()="Medium"]`,
   todoJiraProject: `//span[text()='LTQA Automation Tests']`,
@@ -19,7 +21,7 @@ export const JiraLocators = {
   singleUnlinkButton: `//span[@aria-label="Unlink Issue"]`,
   confirmationPopup: `//span[text()='Confirm']`,
   jiraAppNotStarted: `//span[text()='Not started']`,
-  jiraAppUnlink: `//span[text()='Unlink']`,
+  jiraAppUnlink: C.unlinkSpan,
   jiraAppLink: `//span[text()='Link Test Case']`,
   jiraAppSearch: `//input[@placeholder="Search test cases"]`,
   jiraAppLinkButton: `//button[@aria-label="Link Issue"]`,

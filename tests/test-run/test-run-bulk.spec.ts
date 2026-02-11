@@ -7,48 +7,36 @@ test.describe('Test Run Bulk Operations', {
     { type: 'severity', description: 'critical' },
   ],
 }, () => {
-  test('should duplicate a test run', async ({ page, projectPage, testCasePage, testRunPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
-    await testRunPage.createTestRun();
-    await testRunPage.openTestRun();
-    await testRunPage.duplicateTestRun();
-    // Cleanup
-    await projectPage.deleteProject();
+  test('should delete a test run from test run list page', {
+    annotation: [
+      { type: 'story', description: 'PT-14238429' },
+    ],
+  }, async ({ projectWithTestCase, testRunPage }) => {
+    await testRunPage.createTestRunWithConfigAndAssignee();
+    await testRunPage.deleteTestRunFromListPage();
   });
 
-  test('should archive and reactivate a test run', async ({ page, projectPage, testCasePage, testRunPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
-    await testRunPage.createTestRun();
-    await testRunPage.openTestRun();
-    await testRunPage.archiveTestRun();
-    // Cleanup
-    await projectPage.deleteProject();
-  });
-
-  test('should delete a test run from inside edit test run page', {
+  test('should delete a test run from inside edit page', {
     annotation: [
       { type: 'story', description: 'PT-14238430' },
     ],
-  }, async ({ page, projectPage, testCasePage, testRunPage }) => {
-    // Step 1: Create project and open it
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  }, async ({ projectWithTestCase, testRunPage }) => {
+    await testRunPage.createTestRunWithConfigAndAssignee();
+    await testRunPage.deleteTestRunFromEditPage();
+  });
 
-    // Step 2: Create test case and test run
-    await testCasePage.createTestCase();
+  test('should duplicate a test run', {
+    annotation: [
+      { type: 'story', description: 'PT-14238438' },
+    ],
+  }, async ({ projectWithTestCase, testRunPage }) => {
+    await testRunPage.createTestRunWithConfigAndAssignee();
+    await testRunPage.duplicateTestRunFromList();
+  });
+
+  test('should archive and reactivate a test run', async ({ projectWithTestCase, testRunPage }) => {
     await testRunPage.createTestRun();
-
-    // Step 3: Open test run
     await testRunPage.openTestRun();
-
-    // Step 4: Delete test run from inside edit page
-    await testRunPage.deleteTestRun();
-
-    // Step 5: Cleanup - delete project
-    await projectPage.deleteProject();
+    await testRunPage.archiveTestRun();
   });
 });

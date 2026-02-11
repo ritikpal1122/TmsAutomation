@@ -7,17 +7,12 @@ test.describe('Test Case Creation', {
     { type: 'severity', description: 'critical' },
   ],
 }, () => {
-  test('should create a test case with type, priority, status, and attachment', async ({projectPage, testCasePage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
+  test('should create a test case with type, priority, status, and attachment', async ({ projectWithTestCase, testCasePage }) => {
     await testCasePage.openTestCase();
     await testCasePage.selectTestCaseType();
     await testCasePage.selectAutomationStatus();
     await testCasePage.selectPriority('High');
     await testCasePage.selectTestCaseStatus();
     await testCasePage.saveChanges();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

@@ -11,8 +11,7 @@ test.describe('System Fields', {
 }, () => {
   test.describe.configure({ mode: 'serial' });
 
-  test('should add values to Priority, Status, and Type fields', async ({ page, projectPage, testCasePage, settingsPage }) => {
-    await projectPage.createProjectWithTagDescription();
+  test('should add values to Priority, Status, and Type fields', async ({ projectOnly, page, projectPage, testCasePage, settingsPage }) => {
     await page.goto(EnvConfig.tmsBaseUrl + ROUTES.settingsFields);
     await settingsPage.openSystemFields();
     await settingsPage.addValueInPriority();
@@ -22,7 +21,5 @@ test.describe('System Fields', {
     await projectPage.openProject();
     await testCasePage.createTestCase();
     await testCasePage.openTestCase();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

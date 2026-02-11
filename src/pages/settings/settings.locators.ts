@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 export const SettingsLocators = {
   // Settings navigation
   settingsNav: `//a[text()='Settings']`,
@@ -25,6 +27,7 @@ export const SettingsLocators = {
   checkboxFieldType: `//span[text()='Checkbox']`,
   textareaFieldType: `//span[text()='Textarea']`,
   urlFieldType: `//span[text()='URL']`,
+  userFieldType: `//span[text()='User']`,
 
   // Field options
   requiredField: `//input[@type='checkbox' and @aria-label='Required field']`,
@@ -38,8 +41,8 @@ export const SettingsLocators = {
   // Custom field actions
   createFieldButton: `//span[text()='Create Field']`,
   updateFieldButton: `//span[text()='Update Field']`,
-  editCustomField: `//span[text()='Edit']`,
-  deleteCustomField: `//span[text()='Delete']`,
+  editCustomField: C.editSpan,
+  deleteCustomField: C.deleteSpan,
   deleteFieldConfirmation: `//span[text()='Delete Field']`,
 
   // Field list
@@ -64,7 +67,7 @@ export const SettingsLocators = {
   // General settings
   generalSettingsTab: `//a[text()='General']`,
   organizationName: `input[placeholder='Enter organization name']`,
-  organizationLogo: `input[type='file']`,
+  organizationLogo: C.fileInput,
   saveGeneralSettings: `//span[text()='Save Settings']`,
 
   // User management
