@@ -8,15 +8,10 @@ test.describe('Verify Test Case Selection', {
   ],
 }, () => {
   test('should select and deselect test cases using checkboxes', async ({
+    projectOnly,
     page,
-    projectPage,
     testCasePage,
-    folderPage,
   }) => {
-    // Step 1: Create project and open it
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-
     // Step 2: Create 3 test cases
     const tc1 = `AutoTC_Selection_1_${Date.now()}`;
     const tc2 = `AutoTC_Selection_2_${Date.now()}`;
@@ -39,8 +34,5 @@ test.describe('Verify Test Case Selection', {
 
     // Step 7: Verify selection
     await expect.soft(page.locator(`//p[contains(text(),'Test Cases are selected')]`)).toBeVisible();
-
-    // Step 8: Cleanup
-    await projectPage.deleteProject();
   });
 });

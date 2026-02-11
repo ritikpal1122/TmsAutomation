@@ -1,4 +1,4 @@
-import { test, expect } from '../../src/fixtures/tms.fixture.js';
+import { test } from '../../src/fixtures/tms.fixture.js';
 import { EnvConfig } from '../../src/config/env.config.js';
 
 test.describe('Configuration - Linux', {
@@ -11,16 +11,10 @@ test.describe('Configuration - Linux', {
 }, () => {
   test('should create a Linux configuration, edit and delete it', async ({ page, configPage }) => {
     await page.goto(EnvConfig.tmsBaseUrl + '/configurations');
-
     await configPage.createConfiguration({
-      name: configPage.configurationName,
-      osType: 'Linux',
-      osVersion: 'Ubuntu 22.04',
-      browser: 'Firefox',
-      browserVersion: 'Latest',
-      resolution: '1920x1080',
+      name: configPage.configurationName, osType: 'Linux', osVersion: 'Ubuntu 22.04',
+      browser: 'Firefox', browserVersion: 'Latest', resolution: '1920x1080',
     });
-
     await configPage.verifyConfigurationExists(configPage.configurationName);
     await configPage.editConfiguration();
     await configPage.deleteConfiguration();

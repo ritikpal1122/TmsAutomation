@@ -7,14 +7,8 @@ test.describe('Folder CRUD', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should create, rename, and delete a folder', async ({ page, projectPage, folderPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await folderPage.createFolder();
-    await folderPage.createSubFolder(folderPage.folderName);
+  test('should create folder with test case, rename, and delete', async ({ projectWithTestCaseInFolder, folderPage }) => {
     await folderPage.renameFolder(folderPage.folderName);
     await folderPage.deleteFolder(folderPage.newFolderName);
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

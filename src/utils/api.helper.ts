@@ -47,57 +47,37 @@ export class ApiHelper {
     return { status: response.status(), body };
   }
 
-  async postWithAuth<T>(
+  /** Generic auth request — all *WithAuth methods delegate to this */
+  private async requestWithAuth<T>(
+    method: 'post' | 'get' | 'delete' | 'patch',
     url: string,
-    data: unknown,
     authToken: string,
+    data?: unknown,
   ): Promise<{ status: number; body: T }> {
-    const response = await this.request.post(url, {
-      data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: authToken,
-      },
-    });
-    const body = (await response.json()) as T;
-    return { status: response.status(), body };
-  }
+    const headers: Record<string, string> = { Authorization: authToken };
+    if (data !== undefined) headers['Content-Type'] = 'application/json';
 
-  async deleteWithAuth<T>(
-    url: string,
-    authToken: string,
-  ): Promise<{ status: number; body: T }> {
-    const response = await this.request.delete(url, {
-      headers: { Authorization: authToken },
+    const response = await this.request[method](url, {
+      ...(data !== undefined ? { data } : {}),
+      headers,
     });
     const body = (await response.json().catch(() => ({}) as T));
     return { status: response.status(), body };
   }
 
-  async getWithAuth<T>(
-    url: string,
-    authToken: string,
-  ): Promise<{ status: number; body: T }> {
-    const response = await this.request.get(url, {
-      headers: { Authorization: authToken },
-    });
-    const body = (await response.json()) as T;
-    return { status: response.status(), body };
+  async postWithAuth<T>(url: string, data: unknown, authToken: string): Promise<{ status: number; body: T }> {
+    return this.requestWithAuth<T>('post', url, authToken, data);
   }
 
-  async patchWithAuth<T>(
-    url: string,
-    data: unknown,
-    authToken: string,
-  ): Promise<{ status: number; body: T }> {
-    const response = await this.request.patch(url, {
-      data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: authToken,
-      },
-    });
-    const body = (await response.json()) as T;
-    return { status: response.status(), body };
+  async deleteWithAuth<T>(url: string, authToken: string): Promise<{ status: number; body: T }> {
+    return this.requestWithAuth<T>('delete', url, authToken);
+  }
+
+  async getWithAuth<T>(url: string, authToken: string): Promise<{ status: number; body: T }> {
+    return this.requestWithAuth<T>('get', url, authToken);
+  }
+
+  async patchWithAuth<T>(url: string, data: unknown, authToken: string): Promise<{ status: number; body: T }> {
+    return this.requestWithAuth<T>('patch', url, authToken, data);
   }
 }

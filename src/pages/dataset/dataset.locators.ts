@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 /**
  * Locator file for Dataset page elements in Test Manager
  *
@@ -48,7 +50,7 @@ export const DatasetLocators = {
   datasetDeleteConfirmBtn: `//button[normalize-space()='Delete' or normalize-space()='Confirm' or contains(@class,'danger')]`,
 
   // ============== DATASET DETAIL PAGE ==============
-  datasetSaveBtn: `//button[normalize-space()='Save']`,
+  datasetSaveBtn: C.saveNormalizedButton,
   datasetTitleTextarea: `//textarea[@name='title']`,
   datasetBackBtn: `//span[text()='Datasets']`,
 

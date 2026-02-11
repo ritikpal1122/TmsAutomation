@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 /**
  * Locators for Module functionality in Test Manager
  */
@@ -9,7 +11,7 @@ export const ModuleLocators = {
   moduleDescription: `//textarea[@placeholder="Describe the purpose of this module (optional)."]`,
   moduleTag: `//input[@placeholder="Add Tags separated by enter"]`,
   moduleStepSteps: `//span[text() = 'Enter the test step details']/following-sibling::div[1]`,
-  moduleStepStepsCancel: `//span[text()="Cancel"]`,
+  moduleStepStepsCancel: C.cancelSpan,
   moduleAddStep: `//span[text()="Add"]`,
   createNewModule: `//span[text()="Create new module"]`,
   addStep: `//span[text()="Add Step"]`,

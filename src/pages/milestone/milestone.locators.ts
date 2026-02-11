@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 /**
  * Locators for Milestone functionality in Test Manager
  */
@@ -52,7 +54,7 @@ export const MilestoneLocators = {
   milestoneNoMilestonesMsg: `//span[contains(., 'No Open Milestone Found')]`,
 
   // ============== MILESTONE MENU OPTIONS ==============
-  milestoneOpenMenu: `//button[@aria-label='Open menu']`,
+  milestoneOpenMenu: C.openMenuButton,
   milestoneEditMenu: `//ul[@role='menu']//div[text()='Edit']`,
   milestoneDeleteMenu: `//ul[@role='menu']//div[text()='Delete']`,
   milestoneMarkCompleteMenu: `//div[@role='menuitem'][contains(.,'Mark as Complete')]`,

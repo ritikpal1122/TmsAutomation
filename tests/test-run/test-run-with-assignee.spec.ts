@@ -1,6 +1,6 @@
 import { test, expect } from '../../src/fixtures/tms.fixture.js';
 
-test.describe('Test Run With Assignee', {
+test.describe('Test Run With Assignee and Configuration', {
   tag: ['@regression'],
   annotation: [
     { type: 'feature', description: 'Test Run Management' },
@@ -8,24 +8,14 @@ test.describe('Test Run With Assignee', {
     { type: 'story', description: 'PT-14178483' },
   ],
 }, () => {
-  test('should create a test run with assignee and configuration', async ({ page, projectPage, testCasePage, testRunPage }) => {
-    // Step 1: Create project and open it
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
+  test('should create a test run with assignee and configuration', async ({ projectWithTestCase, testRunPage }) => {
 
-    // Step 2: Create test case
-    await testCasePage.createTestCase();
+    // Create test run with config and assignee via wizard
+    await testRunPage.createTestRunWithConfigAndAssignee();
 
-    // Step 3-4: Create test run with configuration AND assignee
-    await testRunPage.createTestRun();
-    await testRunPage.openTestRun();
-    await testRunPage.selectConfiguration('default');
-    await testRunPage.selectAssignee('auto');
-
-    // Step 5: Verify test run created
+    // Verify test run created — navigate to list and check
     await testRunPage.backToTestRunList();
+    await expect.soft(testRunPage.loc(`//a[text()="${testRunPage.testRunName}"]`)).toBeVisible();
 
-    // Step 6: Cleanup - delete project
-    await projectPage.deleteProject();
   });
 });

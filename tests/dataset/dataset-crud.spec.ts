@@ -7,13 +7,7 @@ test.describe('Dataset CRUD', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should perform full dataset CRUD lifecycle', async ({ page, projectPage, datasetPage }) => {
-    // Step 1-2: Open test manager and create a project with title, tag, description
-    await projectPage.createProjectWithTagDescription();
-
-    // Step 3: Open created project
-    await projectPage.openProject();
-
+  test('should perform full dataset CRUD lifecycle', async ({ projectOnly, page, datasetPage }) => {
     // Step 4: Open Datasets tab
     await datasetPage.openDatasetsTab();
 
@@ -67,11 +61,5 @@ test.describe('Dataset CRUD', {
 
     // Step 21: Verify dataset is deleted successfully
     await datasetPage.verifyDatasetDeleted();
-
-    // Step 22: Back on project list page
-    await projectPage.backToProjectList();
-
-    // Step 23: Delete the created project
-    await projectPage.deleteProject();
   });
 });

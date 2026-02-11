@@ -1,4 +1,5 @@
-import { test, expect } from '../../src/fixtures/tms.fixture.js';
+import { test } from '../../src/fixtures/tms.fixture.js';
+import { setupReportProject, configureReportFilters, generateAndVerifyReport } from '../../src/helpers/report-test.helper.js';
 
 test.describe('Report - Date Range Filter', {
   tag: ['@regression'],
@@ -7,21 +8,11 @@ test.describe('Report - Date Range Filter', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should create a Detailed Execution History report with date range', async ({ page, projectPage, reportPage, testCasePage, testRunPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
-    await testRunPage.createTestRun();
-    await reportPage.openReportsTab();
-    await reportPage.startReportCreation('Detailed Execution History');
-    await reportPage.enterReportName();
-    await reportPage.enterReportDescription();
-    await reportPage.selectDateRangeFilter();
-    await reportPage.selectDateRangePreset('Last 30 Days');
-    await reportPage.clickContinue();
-    await reportPage.clickGenerateReport();
-    await reportPage.verifyReportCreated();
-    // Cleanup
+  test('should create a Detailed Execution History report with date range', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
+    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [] };
+    await setupReportProject(opts);
+    await configureReportFilters(opts);
+    await generateAndVerifyReport(reportPage);
     await projectPage.deleteProject();
   });
 });

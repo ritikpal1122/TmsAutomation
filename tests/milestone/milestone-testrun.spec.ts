@@ -27,15 +27,11 @@ test.describe('Milestone with TestRun from Creation and Due Date', {
    * 14. Delete project
    */
   test('should create milestone with due date and associate test run via edit', async ({
+    projectWithTestCase,
     projectPage,
-    testCasePage,
     testRunPage,
     milestonePage,
   }) => {
-    // Step 1: Create project, open project, create test cases
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
 
     // Step 2: Open Test Run creation form, create Test Run with config and assignee
     await testRunPage.createTestRun();
@@ -86,7 +82,5 @@ test.describe('Milestone with TestRun from Creation and Due Date', {
     await milestonePage.deleteMilestone();
     await milestonePage.verifyMilestoneDeletedSuccessfully();
 
-    // Step 14: Delete project
-    await projectPage.deleteProject();
   });
 });

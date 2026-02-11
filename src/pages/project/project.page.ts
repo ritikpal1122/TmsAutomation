@@ -56,7 +56,10 @@ export class ProjectPage extends BasePage {
 
       // Retry search up to 3 times (newly created projects may take time to appear)
       await retryAction(this.page, async () => {
-        const el = this.loc(L.searchProject); await el.click(); await el.clear(); await el.fill(projectName);
+        const el = this.loc(L.searchProject);
+        await el.click();
+        await el.clear();
+        await el.pressSequentially(projectName, { delay: 50 });
         await waitForNetworkIdle(this.page);
 
         const projectLink = this.loc(L.createdProject(projectName));
@@ -89,7 +92,11 @@ export class ProjectPage extends BasePage {
         await this.page.goto(EnvConfig.tmsBaseUrl);
         await waitForNetworkIdle(this.page);
       }
-      await fillAndWaitForSearch(this.page, this.loc(L.searchProject), projectName);
+      const searchInput = this.loc(L.searchProject);
+      await searchInput.click();
+      await searchInput.clear();
+      await searchInput.pressSequentially(projectName, { delay: 50 });
+      await waitForNetworkIdle(this.page);
       if (await this.isVisible(L.createdProject(projectName))) {
         await this.loc(L.projectTripleDotButton(projectName)).first().click();
         await this.loc(L.projectDeleteButton).click();
@@ -108,6 +115,6 @@ export class ProjectPage extends BasePage {
   }
 
   async backToProjectList(): Promise<void> {
-    await this.loc(L.backOnProjectPage).click();
+    await this.loc(L.backToProjectList).click();
   }
 }

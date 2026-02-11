@@ -7,22 +7,12 @@ test.describe('Test Run CRUD', {
     { type: 'severity', description: 'critical' },
   ],
 }, () => {
-  test('should create a test run without config and assignee', async ({ page, projectPage, testCasePage, testRunPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
+  test('should create a test run without config and assignee', async ({ projectWithTestCase, testRunPage }) => {
     await testRunPage.createTestRun();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 
-  test('should create and delete a test run', async ({ page, projectPage, testCasePage, testRunPage }) => {
-    await projectPage.createProjectWithTagDescription();
-    await projectPage.openProject();
-    await testCasePage.createTestCase();
+  test('should create and delete a test run', async ({ projectWithTestCase, testRunPage }) => {
     await testRunPage.createTestRun();
     await testRunPage.deleteTestRun();
-    // Cleanup
-    await projectPage.deleteProject();
   });
 });

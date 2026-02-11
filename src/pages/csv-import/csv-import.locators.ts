@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 export const CsvImportLocators = {
   // Import navigation
   importNav: `//span[text()='Import']`,
@@ -5,8 +7,8 @@ export const CsvImportLocators = {
   importFromCsv: `//span[text()='Import from CSV']`,
 
   // File upload
-  fileUploadInput: `input[type='file']`,
-  browseCsv: `input[type='file']`,
+  fileUploadInput: C.fileInput,
+  browseCsv: C.fileInput,
   uploadFileButton: `//span[text()='Upload File']`,
   selectFileButton: `//span[text()='Select File']`,
   dragDropArea: `//div[contains(@class,'drag-drop-area')]`,
@@ -21,8 +23,8 @@ export const CsvImportLocators = {
 
   // CSV mapping
   csvMappingStep: `//div[contains(@class,'csv-mapping')]`,
-  nextButton: `//span[text()='Next']`,
-  nextButtonCsv: `//span[text()='Next']`,
+  nextButton: C.nextSpan,
+  nextButtonCsv: C.nextSpan,
   previousButton: `//span[text()='Previous']`,
   verifyTitleColumn: `//th[text()='Title']`,
   verifyTypeColumn: `//th[text()='Type']`,
@@ -71,7 +73,7 @@ export const CsvImportLocators = {
   previewCsv: `//span[text()='Preview Import']`,
   importTestCaseCta: `//span[text()='Import Test Cases']`,
   startImportButton: `//span[text()='Start Import']`,
-  cancelImport: `//span[text()='Cancel']`,
+  cancelImport: C.cancelSpan,
   testcaseTitleImportingViaCsv: `//span[text()='Test Case Imported']`,
 
   // Import progress

@@ -178,6 +178,65 @@ export class ConfigurationPage extends BasePage {
     });
   }
 
+  async createFalconConfiguration(config: ConfigurationRequest): Promise<void> {
+    await test.step('Create Falcon configuration: ' + config.name, async () => {
+      await this.loc(L.createConfigurationButton).click();
+      await this.loc(L.falconPlatformTab).click();
+      await this.loc(L.configurationNameInput).fill(config.name);
+
+      if (config.osType) {
+        await this.loc(L.falconOsDropdown).click();
+        await this.loc(L.selectOS(config.osType)).click();
+      }
+      if (config.osVersion) {
+        await this.loc(L.falconOsVersionDropdown).click();
+        await this.loc(L.selectOsVersion(config.osVersion)).click();
+      }
+      if (config.browser) {
+        await this.loc(L.falconBrowserDropdown).click();
+        await this.loc(L.selectBrowser(config.browser)).click();
+      }
+      if (config.browserVersion) {
+        await this.loc(L.falconBrowserVersionDropdown).click();
+        await this.loc(L.selectBrowserVersion(config.browserVersion)).click();
+      }
+      if (config.resolution) {
+        await this.loc(L.falconResolutionDropdown).click();
+        await this.loc(L.selectResolution(config.resolution)).click();
+      }
+
+      await this.loc(L.createConfigurationSubmit).click();
+      await expect.soft(this.loc(L.createdConfiguration(config.name))).toBeVisible({ timeout: TIMEOUTS.long });
+    });
+  }
+
+  async createRealDeviceConfiguration(config: ConfigurationRequest): Promise<void> {
+    await test.step('Create Real Device configuration: ' + config.name, async () => {
+      await this.loc(L.createConfigurationButton).click();
+      await this.loc(L.realDevicePlatformTab).click();
+      await this.loc(L.configurationNameInput).fill(config.name);
+
+      if (config.osType) {
+        await this.loc(L.selectOS(config.osType)).click();
+      }
+      if (config.osVersion) {
+        await this.loc(L.realDeviceOsVersionDropdown).click();
+        await this.loc(L.selectOsVersion(config.osVersion)).click();
+      }
+      if (config.manufacturer) {
+        await this.loc(L.manufacturerDropdown).click();
+        await this.loc(L.selectManufacturer(config.manufacturer)).click();
+      }
+      if (config.device) {
+        await this.loc(L.deviceNameDropdown).click();
+        await this.loc(L.selectDeviceName(config.device)).click();
+      }
+
+      await this.loc(L.createConfigurationSubmit).click();
+      await expect.soft(this.loc(L.createdConfiguration(config.name))).toBeVisible({ timeout: TIMEOUTS.long });
+    });
+  }
+
   async verifyConfigurationExists(name: string): Promise<void> {
     await expect.soft(this.loc(L.createdConfiguration(name))).toBeVisible({ timeout: TIMEOUTS.medium });
   }

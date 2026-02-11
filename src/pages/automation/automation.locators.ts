@@ -2,6 +2,8 @@
  * Locators for Automation functionality in Test Manager
  */
 
+import { CommonLocators as C } from '../common/common.locators.js';
+
 export const AutomationLocators = {
   automationSidebar: `//span[text()='Automation']`,
   runtimeTc: `//h4[contains(text(),'RunTimeAutomationTestcase')]`,
@@ -16,13 +18,13 @@ export const AutomationLocators = {
   tmsTcIdAutomationDash: `//a[contains(text(),'#TC-')]`,
   unlinkTcAutomationDash: `//span[text()='Unlink Test']`,
   automationTcTitleNewLink: `//span[text()='RunTimeAutomationTestcase']`,
-  automationUnlinkConfirmation: `//span[text()='Unlink']`,
+  automationUnlinkConfirmation: C.unlinkSpan,
   searchTcAutomationDash: `//input[@placeholder="Search test cases here"]`,
   linkOpenSearch: `//button[@aria-label="Link Test Case"]`,
   noExecution: `//span[text()='No executions so far']`,
   buildAutomation: `//span[text()="RunTimeAutomationTestcase"]`,
   openMenuAutomationPage: `//button[@aria-label="Open  Menu, Press Enter to view "]`,
-  deleteAutomationPage: `//span[text()='Delete']`,
+  deleteAutomationPage: C.deleteSpan,
   deleteAutomationPageProd: `//span[text()='Delete...']`,
   openMenuProd: `(//button[@aria-label="Open  Menu, Press Enter to view "])[1]`,
   variableLink: `//span[text()='Launch variables missing']`,

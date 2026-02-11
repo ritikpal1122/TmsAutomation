@@ -9,6 +9,8 @@ export type CustomFieldConfig = {
   hasDescription: boolean;
   /** Whether this field type has dropdown options */
   hasDropdownOptions: boolean;
+  /** Whether the multi-select checkbox should be toggled on */
+  isMultiSelect?: boolean;
 };
 
 /**
@@ -77,6 +79,25 @@ export const CUSTOM_FIELD_TYPES: [string, CustomFieldConfig][] = [
       typeSelectionLocators: [L.textFieldType, L.customFieldType, L.urlFieldType],
       hasDescription: false,
       hasDropdownOptions: false,
+    },
+  ],
+  [
+    'User',
+    {
+      typeName: 'User',
+      typeSelectionLocators: [L.textFieldType, L.customFieldType, L.userFieldType],
+      hasDescription: false,
+      hasDropdownOptions: false,
+    },
+  ],
+  [
+    'Multi-Select Dropdown',
+    {
+      typeName: 'Dropdown',
+      typeSelectionLocators: [L.textFieldType, L.customFieldType, L.dropdownFieldType],
+      hasDescription: false,
+      hasDropdownOptions: true,
+      isMultiSelect: true,
     },
   ],
 ];

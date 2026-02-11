@@ -1,3 +1,5 @@
+import { CommonLocators as C } from '../common/common.locators.js';
+
 /**
  * Locators for SDK functionality in Test Manager
  */
@@ -13,18 +15,20 @@ export const SdkLocators = {
   sdkStep4: `//span[text()='4']`,
   sdkStep5: `//span[text()='5']`,
   recordMedia: `//span[text()='Recorded Media']`,
-  tcStatusPassedSdk: `//span[text()='Passed']`,
+  tcStatusPassedSdk: C.passedSpan,
   statusPassedSdk: `(//span[text()='Passed'])[2]`,
-  tcStatusPassedBuildSummSdk: `//span[text()='Passed']`,
+  tcStatusPassedBuildSummSdk: C.passedSpan,
   markSdkStatus: `//span[text()='Mark Status']`,
   finishSdk: `//span[text()='Finish']`,
-  tcNextCtaSdk: `//span[text()='Next']`,
+  tcNextCtaSdk: C.nextSpan,
   remarkSdk: `//textarea[@placeholder='Add any observation/remark for the test case execution.']`,
-  projectTagSdk: `input[placeholder='Add Tags separated by enter']`,
+  projectTagSdk: C.tagsInput,
   openMenuSdk: `//button[@aria-label="open-menu"]`,
   openExpandMenu: `(//button[@data-component='IconButton' and @aria-label='open-menu'])[last()]`,
   collapseToExpand: `//span[text()='Test Step Execution Summary']`,
   manualStep: `//div[@id='step-description']//div[contains(@class, 'reactjs-tiptap-editor')]`,
+  tcStatusFailedSdk: `//span[span[text()='Failed']]`,
+  testStepsStatusCollapse: (stepName: string) => `(//div[div[div[div[span[text()='${stepName}']]]]]//button)[4]`,
 } as const;
 
 /**

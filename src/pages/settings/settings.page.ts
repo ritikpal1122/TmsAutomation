@@ -241,6 +241,10 @@ export class SettingsPage extends BasePage {
         }
       }
 
+      if (config.isMultiSelect) {
+        await this.loc(L.multiSelectDropdown).click();
+      }
+
       // Apply to project and test case
       await this.loc(L.applyToProject).click();
       await this.loc(L.applyToTestCase).click();
