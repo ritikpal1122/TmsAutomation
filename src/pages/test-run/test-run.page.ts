@@ -30,6 +30,38 @@ export class TestRunPage extends BasePage {
     });
   }
 
+  async createTestRunWithConfig(name?: string): Promise<void> {
+    await test.step('Create test run with configuration (no assignee)', async () => {
+      const runName = name ?? this.testRunName;
+      await clickAndWaitForNetwork(this.page, this.loc(L.testRunNav));
+      await this.loc(L.createTestRunButton).first().click({ timeout: TIMEOUTS.long });
+      await this.loc(L.testRunTitle).fill(runName);
+      await this.loc(L.testRunDescription).fill(randomString(RANDOM_LENGTH.long));
+      await this.loc(L.testRunTag).fill(`tag_${randomString(RANDOM_LENGTH.short)}`);
+      await this.page.keyboard.press('Enter');
+      // Create test run (opens edit screen with test cases)
+      await this.loc(L.saveTestRunCta).last().click({ timeout: TIMEOUTS.long });
+      await waitForNetworkIdle(this.page);
+      // Select all test cases and add them
+      await this.loc(L.selectAllCheckboxInTpTestcase).waitFor({ state: 'visible', timeout: TIMEOUTS.long });
+      await this.loc(L.selectAllCheckboxInTpTestcase).click({ force: true });
+      await this.loc(L.addTcTestRunCta).click();
+      await waitForNetworkIdle(this.page);
+      // Verify missing config/assignee message
+      await expect.soft(this.loc(L.missingMsgTR)).toBeVisible({ timeout: TIMEOUTS.medium });
+      // Add configuration (skip assignee)
+      await this.loc(L.addConfigCtaTP).click();
+      await this.loc(L.selectConfigCheck).click();
+      await this.loc(L.applyConfiguration).click();
+      await waitForNetworkIdle(this.page);
+      // Save test run
+      await this.loc(L.saveTestRunCta).last().click({ timeout: TIMEOUTS.long });
+      await waitForNetworkIdle(this.page);
+      // Verify test run appears on instances page
+      await expect.soft(this.loc(L.createdTestrunAppearInstancesPage(runName))).toBeVisible({ timeout: TIMEOUTS.long });
+    });
+  }
+
   async createTestRunWithConfigAndAssignee(name?: string): Promise<void> {
     await test.step('Create test run with configuration and assignee', async () => {
       const runName = name ?? this.testRunName;
