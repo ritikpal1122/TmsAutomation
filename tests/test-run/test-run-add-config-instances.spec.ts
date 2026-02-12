@@ -24,8 +24,9 @@ test.describe('Test Run Add Config from Instances', {
 
     // Open the test run
     await testRunPage.openTestRun();
-
+    await testRunPage.clickEditTestRun();
+    await testRunPage.addTestCases(1)
     // Add configuration from instances page
-    await testRunPage.addConfigFromInstances();
+    await testRunPage.configurationAddedFromNoConfiguration();
   });
 });
