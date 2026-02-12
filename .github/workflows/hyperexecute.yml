@@ -79,10 +79,13 @@ jobs:
 
       - name: Run HyperExecute
         id: he_run
+        env:
+          LT_USERNAME: ${{ secrets.LT_USERNAME }}
+          LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
         run: |
           ./hyperexecute \
-            --user ${{ secrets.LT_USERNAME }} \
-            --key ${{ secrets.LT_ACCESS_KEY }} \
+            --user "$LT_USERNAME" \
+            --key "$LT_ACCESS_KEY" \
             --config hyperexecute.yaml \
             ${{ inputs.labels && format('--labels "{0}"', inputs.labels) }} \
             2>&1 | tee he-output.log
