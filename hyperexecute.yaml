@@ -36,6 +36,8 @@ globalPre:
     - npx playwright install chromium --with-deps
 
 pre:
+  - npm ci
+  - npx playwright install chromium --with-deps
   - npx playwright test --project setup
 
 testDiscovery:
