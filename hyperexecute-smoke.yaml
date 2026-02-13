@@ -1,5 +1,5 @@
 ---
-version: 0.1
+version: "0.1"
 globalTimeout: 30
 testSuiteTimeout: 15
 testSuiteStep: 5
@@ -30,14 +30,17 @@ cacheDirectories:
   - node_modules
   - /home/user/.cache/ms-playwright
 
-globalPre: "npm ci && npx playwright install chromium --with-deps"
+globalPre:
+  commands:
+    - npm ci
+    - npx playwright install chromium --with-deps
 
 pre:
   - npx playwright test --project setup
 
 testDiscovery:
   type: raw
-  mode: dynamic
+  mode: remote
   command: node scripts/discover-tests.js --env $TEST_ENV --grep "@smoke"
 
 testRunnerCommand: node scripts/run-tests.js --env $TEST_ENV --mode remote --run-profile smoke --grep "@smoke" --retries 1 -- tests/$test
