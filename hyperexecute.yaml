@@ -23,12 +23,6 @@ env:
   LT_ACCESS_KEY: ${LT_ACCESS_KEY}
   AUTH_EMAIL: ${AUTH_EMAIL}
   AUTH_PASSWORD: ${AUTH_PASSWORD}
-  AUTH_TOKEN: ${AUTH_TOKEN}
-  REPORT_LAB_ENABLED: "true"
-  REPORT_LAB_URL: ${REPORT_LAB_URL}
-  SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
-  SLACK_CHANNEL: ${SLACK_CHANNEL}
-  SLACK_MENTIONS: ${SLACK_MENTIONS}
   HE_BUILD_ID: ${HE_BUILD_ID}
 
 cacheKey: '{{ checksum "package-lock.json" }}'
@@ -37,9 +31,7 @@ cacheDirectories:
   - /home/user/.cache/ms-playwright
 
 globalPre:
-  - npm ci
-  - npx playwright install chromium --with-deps
-  - npx tsx scripts/report-lab.ts start
+  - "npm ci && npx playwright install chromium --with-deps"
 
 pre:
   - npx playwright test --project setup
@@ -52,16 +44,9 @@ testDiscovery:
 testRunnerCommand: node scripts/run-tests.js --env $TEST_ENV --mode remote --run-profile regression --grep "${TEST_SUITE}" --retries 2 -- tests/$test
 
 post:
-  - npx tsx scripts/report-lab.ts create_tests
-
-globalPost:
-  - npx tsx scripts/report-lab.ts end
-  - npx tsx scripts/report-lab.ts notify
+  - echo "Test suite complete"
 
 uploadArtefacts:
-  - name: report-lab-results
-    path:
-      - report-lab-results/
   - name: playwright-report
     path:
       - playwright-report/
