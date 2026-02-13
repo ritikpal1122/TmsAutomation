@@ -27,8 +27,14 @@ report-lab-results/
 .summary.json
 .slack_thread_ts
 
+# HyperExecute CLI binary
+hyperexecute
+
 # Environment
 .env
 
 # OS generated
 *.log
+
+
+/kaneai-testkit
