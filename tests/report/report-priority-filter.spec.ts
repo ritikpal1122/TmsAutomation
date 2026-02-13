@@ -9,7 +9,7 @@ test.describe('Report - Priority Filter', {
   ],
 }, () => {
   test('should create a report with priority filter', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
-    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'Priority', value: 'High' }] };
+    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'Priority' as const, value: 'High' }] };
     await setupReportProject(opts);
     await configureReportFilters(opts);
     await generateAndVerifyReport(reportPage, 1);

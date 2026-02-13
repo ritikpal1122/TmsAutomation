@@ -9,7 +9,7 @@ test.describe('Report - Automation Status Filter', {
   ],
 }, () => {
   test('should create a report with automation status filter', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
-    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'AutomationStatus', value: 'Not Automated' }] };
+    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'AutomationStatus' as const, value: 'Not Automated' }] };
     await setupReportProject(opts);
     await configureReportFilters(opts);
     await generateAndVerifyReport(reportPage, 1);

@@ -5,7 +5,50 @@ import type { ReportPage } from '../pages/report/report.page.js';
 import type { FolderPage } from '../pages/folder/folder.page.js';
 import { createProjectWithTestCase } from './common-setup.helper.js';
 
-type ReportFilter = { method: string; value: string };
+/** Supported filter method names — must match ReportPage select/set method pairs */
+export type FilterMethod = 'Priority' | 'Status' | 'Folder' | 'AutomationStatus' | 'Type' | 'Tags' | 'CreatedBy' | 'LinkedIssues';
+
+export type ReportFilter = { method: FilterMethod; value: string };
+
+type FilterAction = {
+  select: (rp: ReportPage) => Promise<void>;
+  setValue: (rp: ReportPage, v: string) => Promise<void>;
+};
+
+const FILTER_ACTIONS: Record<FilterMethod, FilterAction> = {
+  Priority: {
+    select: (rp) => rp.selectPriorityFilter(),
+    setValue: (rp, v) => rp.setPriorityFilterValue(v),
+  },
+  Status: {
+    select: (rp) => rp.selectStatusFilter(),
+    setValue: (rp, v) => rp.setStatusFilterValue(v),
+  },
+  Folder: {
+    select: (rp) => rp.selectFolderFilter(),
+    setValue: (rp, v) => rp.setFolderFilterValue(v),
+  },
+  AutomationStatus: {
+    select: (rp) => rp.selectAutomationStatusFilter(),
+    setValue: (rp, v) => rp.setAutomationStatusFilterValue(v),
+  },
+  Type: {
+    select: (rp) => rp.selectTypeFilter(),
+    setValue: (rp, v) => rp.setTypeFilterValue(v),
+  },
+  Tags: {
+    select: (rp) => rp.selectTagsFilter(),
+    setValue: (rp, v) => rp.setTagsFilterValue(v),
+  },
+  CreatedBy: {
+    select: (rp) => rp.selectCreatedByFilter(),
+    setValue: (rp, v) => rp.setCreatedByFilterValue(v),
+  },
+  LinkedIssues: {
+    select: (rp) => rp.selectLinkedIssuesFilter(),
+    setValue: (rp, v) => rp.setLinkedIssuesFilterValue(v),
+  },
+};
 
 /** Use as filter value to auto-resolve the created folder name at runtime */
 export const USE_FOLDER_NAME = '__folderName__' as const;
@@ -74,9 +117,10 @@ export async function configureReportFilters(opts: ReportSetupOptions): Promise<
   if (filters.length > 0) {
     await reportPage.enableTestCasesFilter();
     for (const f of filters) {
+      const action = FILTER_ACTIONS[f.method];
       const value = f.value === USE_FOLDER_NAME && folderPage ? folderPage.folderName : f.value;
-      await (reportPage as any)[`select${f.method}Filter`]();
-      await (reportPage as any)[`set${f.method}FilterValue`](value);
+      await action.select(reportPage);
+      await action.setValue(reportPage, value);
     }
   }
 }

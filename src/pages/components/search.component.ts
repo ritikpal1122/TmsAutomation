@@ -1,7 +1,7 @@
 import { type Page } from '@playwright/test';
 import { TIMEOUTS } from '../../config/constants.js';
 import { waitForNetworkIdle } from '../../utils/wait.helper.js';
-import { BasePage } from '../../utils/base.page.js';
+import { BasePage } from '../base.page.js';
 
 /**
  * Reusable Search component.

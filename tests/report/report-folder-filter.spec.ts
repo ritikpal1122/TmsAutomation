@@ -12,7 +12,7 @@ test.describe('Report - Folder Filter', {
     const opts = {
       projectPage, testCasePage, reportPage, folderPage,
       folder: true, skipTestRun: true,
-      filters: [{ method: 'Folder', value: USE_FOLDER_NAME }],
+      filters: [{ method: 'Folder' as const, value: USE_FOLDER_NAME }],
     };
     await setupReportProject(opts);
     await configureReportFilters(opts);

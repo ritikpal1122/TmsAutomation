@@ -37,34 +37,46 @@ export class TmsApi {
     authToken: string,
     name: string,
     description?: string,
-  ): Promise<{ status: number; body: Record<string, unknown> }> {
-    return this.api.postWithAuth<Record<string, unknown>>(
+  ): Promise<{ status: number; body: ProjectResponse }> {
+    const result = await this.api.postWithAuth<ProjectResponse>(
       `${EnvConfig.tmsApiUrl}${API_PATHS.projects}`,
       { name, description: description ?? '' },
       authToken,
     );
+    if (result.status < 200 || result.status >= 300) {
+      throw new Error(`Failed to create project "${name}". Status: ${result.status}`);
+    }
+    return result;
   }
 
   async deleteProject(
     authToken: string,
     projectId: string,
-  ): Promise<{ status: number; body: Record<string, unknown> }> {
-    return this.api.deleteWithAuth<Record<string, unknown>>(
+  ): Promise<{ status: number; body: ProjectResponse }> {
+    const result = await this.api.deleteWithAuth<ProjectResponse>(
       `${EnvConfig.tmsApiUrl}${API_PATHS.project(projectId)}`,
       authToken,
     );
+    if (result.status < 200 || result.status >= 300) {
+      throw new Error(`Failed to delete project "${projectId}". Status: ${result.status}`);
+    }
+    return result;
   }
 
   async createTestCase(
     authToken: string,
     projectId: string,
     title: string,
-  ): Promise<{ status: number; body: Record<string, unknown> }> {
-    return this.api.postWithAuth<Record<string, unknown>>(
+  ): Promise<{ status: number; body: TestCaseResponse }> {
+    const result = await this.api.postWithAuth<TestCaseResponse>(
       `${EnvConfig.tmsApiUrl}${API_PATHS.testCases(projectId)}`,
       { title },
       authToken,
     );
+    if (result.status < 200 || result.status >= 300) {
+      throw new Error(`Failed to create test case "${title}". Status: ${result.status}`);
+    }
+    return result;
   }
 
   async createTestRun(
@@ -72,12 +84,16 @@ export class TmsApi {
     projectId: string,
     name: string,
     testCaseIds?: string[],
-  ): Promise<{ status: number; body: Record<string, unknown> }> {
-    return this.api.postWithAuth<Record<string, unknown>>(
+  ): Promise<{ status: number; body: TestRunResponse }> {
+    const result = await this.api.postWithAuth<TestRunResponse>(
       `${EnvConfig.tmsApiUrl}${API_PATHS.testRuns(projectId)}`,
       { name, test_case_ids: testCaseIds ?? [] },
       authToken,
     );
+    if (result.status < 200 || result.status >= 300) {
+      throw new Error(`Failed to create test run "${name}". Status: ${result.status}`);
+    }
+    return result;
   }
 
   // ============== GET / LIST / UPDATE ==============

@@ -20,6 +20,11 @@ const envInput     = extractFlag('--env') || 'stage';
 const modeInput    = extractFlag('--mode');         // local | remote
 const browserInput = extractFlag('--browser');      // chrome-win | edge-win | chrome-mac | firefox-win
 const runProfile   = extractFlag('--run-profile');  // smoke | regression | debug
+const workersInput = extractFlag('--workers');      // number of parallel workers
+
+const mode = modeInput || process.env.TEST_MODE || 'local';
+const isRemote = mode === 'remote';
+const reportLabEnabled = isRemote || process.env.REPORT_LAB_ENABLED === 'true';
 
 // ──────────────────────────────────────────────────────────
 // ENVIRONMENT → REGION MAPPING (single source of truth)
@@ -48,6 +53,11 @@ if (!hasProject) {
   args.push('--project', resolved.project);
 }
 
+// Add --workers if specified
+if (workersInput) {
+  args.push('--workers', workersInput);
+}
+
 // ──────────────────────────────────────────────────────────
 // Stable build ID — generated once here, shared by all workers
 // Ensures all LambdaTest sessions group under one build
@@ -60,24 +70,50 @@ const buildId = process.env.LT_BUILD_ID
 // ──────────────────────────────────────────────────────────
 // Build env vars string for the subprocess
 // ──────────────────────────────────────────────────────────
+ 
 const envVars = [
   `TEST_ENV=${envInput}`,
   `LT_BUILD_ID=${buildId}`,
   modeInput    ? `TEST_MODE=${modeInput}`         : '',
   browserInput ? `LT_PROFILE=${browserInput}`     : '',
   runProfile   ? `LT_RUN_PROFILE=${runProfile}`   : '',
+  reportLabEnabled ? 'REPORT_LAB_ENABLED=true'    : '',
 ].filter(Boolean).join(' ');
 
 const playwrightArgs = args.join(' ');
 const command = `${envVars} npx playwright test ${playwrightArgs}`;
 
-const mode = modeInput || process.env.TEST_MODE || 'local';
 const browser = browserInput || process.env.LT_PROFILE || 'default';
 console.log(`\n  env: ${envInput}  mode: ${mode}  browser: ${browser}  project: ${resolved.project}  build: ${buildId}`);
 console.log(`  cmd: npx playwright test ${playwrightArgs}\n`);
 
+// ──────────────────────────────────────────────────────────
+// ReportLab lifecycle: build/create → tests → build/end
+// Auto-enabled for remote mode; opt-in via REPORT_LAB_ENABLED=true
+// ──────────────────────────────────────────────────────────
+function reportLab(cmd) {
+  try {
+    execSync(`HE_BUILD_ID=${buildId} TEST_ENV=${envInput} TEST_SUITE=${process.env.TEST_SUITE || '@smoke'} npx tsx scripts/report-lab.ts ${cmd}`, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (e) {
+    console.error(`  [report-lab] ${cmd} failed: ${e.message}`);
+  }
+}
+
+if (reportLabEnabled) reportLab('start');
+
+let testsFailed = false;
 try {
   execSync(command, { stdio: 'inherit', cwd: process.cwd() });
 } catch {
-  process.exit(1);
+  testsFailed = true;
 }
+
+if (reportLabEnabled) {
+  reportLab('create_tests');
+  reportLab('end');
+}
+
+if (testsFailed) process.exit(1);

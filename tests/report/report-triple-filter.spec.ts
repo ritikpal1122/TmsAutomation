@@ -12,9 +12,9 @@ test.describe('Report - Priority, Status, and Automation Status Filters', {
     const opts = {
       projectPage, testCasePage, testRunPage, reportPage,
       filters: [
-        { method: 'Priority', value: 'High' },
-        { method: 'Status', value: 'Draft' },
-        { method: 'AutomationStatus', value: 'Not Automated' },
+        { method: 'Priority' as const, value: 'High' },
+        { method: 'Status' as const, value: 'Draft' },
+        { method: 'AutomationStatus' as const, value: 'Not Automated' },
       ],
     };
     await setupReportProject(opts);

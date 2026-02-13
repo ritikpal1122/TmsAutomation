@@ -50,6 +50,11 @@ on:
           - smoke
           - regression
           - debug
+      workers:
+        description: 'Number of parallel Playwright workers (remote-grid only)'
+        required: false
+        default: '10'
+        type: string
       he_concurrency:
         description: 'HyperExecute concurrency override (optional, HE only)'
         required: false
@@ -99,6 +104,7 @@ jobs:
             --mode remote \
             --browser ${{ env.LT_PROFILE }} \
             --run-profile ${{ env.LT_RUN_PROFILE }} \
+            --workers ${{ inputs.workers }} \
             --grep ${{ env.TEST_SUITE }} \
             --retries 2
         env:
@@ -131,6 +137,14 @@ jobs:
           name: test-results-${{ env.TEST_ENV }}-${{ env.TEST_SUITE }}-${{ env.LT_PROFILE }}
           path: test-results/
           retention-days: 7
+
+      - name: Upload ReportLab results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-lab-results-${{ env.TEST_ENV }}-${{ env.TEST_SUITE }}-${{ env.LT_PROFILE }}
+          path: report-lab-results/
+          retention-days: 14
 
       - name: Finalize Job Status
         if: steps.run_tests.outcome == 'failure'

@@ -1,5 +1,5 @@
 import { type Page, expect, test } from '@playwright/test';
-import { BasePage } from '../../utils/base.page.js';
+import { BasePage } from '../base.page.js';
 import { CsvImportLocators as L } from './csv-import.locators.js';
 import { TIMEOUTS } from '../../config/constants.js';
 

@@ -1,5 +1,5 @@
 import { type Page, expect, test } from '@playwright/test';
-import { BasePage } from '../../utils/base.page.js';
+import { BasePage } from '../base.page.js';
 import { TestRunLocators as L } from './test-run.locators.js';
 import { TIMEOUTS, RANDOM_LENGTH } from '../../config/constants.js';
 import { randomString } from '../../utils/random.helper.js';
@@ -100,7 +100,7 @@ export class TestRunPage extends BasePage {
   async addTestCases(count = 1): Promise<void> {
     await test.step(`Add ${count} test case(s) to test run`, async () => {
       await this.loc(L.addTcTestRunCta).click();
-      await this.page.waitForTimeout(1000);
+      await this.loc(L.selectAllCheckboxInTpTestcase).first().waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
       for (let i = 0; i < count; i++) {
         await this.loc(L.selectAllCheckboxInTpTestcase).nth(i).click();
       }
@@ -166,7 +166,7 @@ export class TestRunPage extends BasePage {
       }
       await this.loc(L.bulkAssigneeDropdown).click();
       await this.loc(L.bulkSelectAssignee).click();
-      await this.page.waitForTimeout(2000);
+      await waitForNetworkIdle(this.page);
     });
   }
 
@@ -260,7 +260,7 @@ export class TestRunPage extends BasePage {
       await expect.soft(this.loc(L.createdTestrunAppearInstancesPage(newTcTitle))).not.toBeVisible({ timeout: TIMEOUTS.short });
       // Add new test case
       await this.loc(L.addTcInTR).click();
-      await this.page.waitForTimeout(1000);
+      await this.loc(L.selectAllCheckboxInTpTestcase).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
       await this.loc(L.selectAllCheckboxInTpTestcase).click();
       await this.loc(L.updateTestcaseInTestRun).click();
       await waitForNetworkIdle(this.page);
@@ -304,7 +304,7 @@ export class TestRunPage extends BasePage {
       } else if (status === 'Skipped') {
         await this.loc(L.tcStatusSkip).click();
       }
-      await this.page.waitForTimeout(1000);
+      await waitForNetworkIdle(this.page);
     });
   }
 
@@ -368,7 +368,7 @@ export class TestRunPage extends BasePage {
   async verifyExecutionHistory(statuses: string[]): Promise<void> {
     await test.step('Verify execution history statuses', async () => {
       await this.loc(L.executionHistoryTab).click();
-      await this.page.waitForTimeout(2000);
+      await waitForNetworkIdle(this.page);
       for (const status of statuses) {
         await expect.soft(this.loc(L.executionHistoryStatus(status))).toBeVisible({ timeout: TIMEOUTS.medium });
       }
