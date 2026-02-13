@@ -20,11 +20,6 @@ on:
           - eu-stage
           - eu-prod
 
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
   schedule:
     # Smoke: daily at 8:00 AM UTC
     - cron: '0 8 * * *'
