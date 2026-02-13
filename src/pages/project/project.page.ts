@@ -1,5 +1,5 @@
 import { type Page, expect, test } from '@playwright/test';
-import { BasePage } from '../../utils/base.page.js';
+import { BasePage } from '../base.page.js';
 import { ProjectLocators as L } from './project.locators.js';
 import { TIMEOUTS, RETRY, RANDOM_LENGTH } from '../../config/constants.js';
 import { randomString } from '../../utils/random.helper.js';

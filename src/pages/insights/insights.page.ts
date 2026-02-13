@@ -1,5 +1,5 @@
 import { type Page, expect, test } from '@playwright/test';
-import { BasePage } from '../../utils/base.page.js';
+import { BasePage } from '../base.page.js';
 import { InsightsLocators as L } from './insights.locators.js';
 import { TIMEOUTS, RETRY, POLL } from '../../config/constants.js';
 import { clickAndWaitForNetwork } from '../../utils/wait.helper.js';

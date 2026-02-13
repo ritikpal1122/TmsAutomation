@@ -1,5 +1,5 @@
 import { type Page } from '@playwright/test';
-import { BasePage } from '../../utils/base.page.js';
+import { BasePage } from '../base.page.js';
 
 /**
  * Reusable Delete Confirmation Dialog component.
