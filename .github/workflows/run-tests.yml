@@ -50,6 +50,11 @@ on:
           - smoke
           - regression
           - debug
+      workers:
+        description: 'Number of parallel Playwright workers (remote-grid only)'
+        required: false
+        default: '10'
+        type: string
       he_concurrency:
         description: 'HyperExecute concurrency override (optional, HE only)'
         required: false
@@ -90,13 +95,6 @@ jobs:
       - name: Install Playwright browsers (auth only)
         run: npx playwright install chromium --with-deps
 
-      - name: Create ReportLab build
-        if: always()
-        run: npx tsx scripts/report-lab.ts start
-        env:
-          REPORT_LAB_URL: https://qa-report.lambdatestinternal.com
-          HE_BUILD_ID: ${{ github.run_number }}
-
       - name: Run tests on LambdaTest Grid
         id: run_tests
         continue-on-error: true
@@ -106,6 +104,7 @@ jobs:
             --mode remote \
             --browser ${{ env.LT_PROFILE }} \
             --run-profile ${{ env.LT_RUN_PROFILE }} \
+            --workers ${{ inputs.workers }} \
             --grep ${{ env.TEST_SUITE }} \
             --retries 2
         env:
@@ -113,20 +112,7 @@ jobs:
           LT_ACCESS_KEY: ${{ secrets.HE_ACCESS_KEY }}
           AUTH_EMAIL: ${{ secrets.AUTH_EMAIL }}
           AUTH_PASSWORD: ${{ secrets.AUTH_PASSWORD }}
-          REPORT_LAB_ENABLED: 'true'
           CI: true
-
-      - name: Send results to ReportLab
-        if: always()
-        run: npx tsx scripts/report-lab.ts create_tests
-        env:
-          REPORT_LAB_URL: https://qa-report.lambdatestinternal.com
-
-      - name: End ReportLab build
-        if: always()
-        run: npx tsx scripts/report-lab.ts end
-        env:
-          REPORT_LAB_URL: https://qa-report.lambdatestinternal.com
 
       - name: Upload Playwright HTML report
         uses: actions/upload-artifact@v4
