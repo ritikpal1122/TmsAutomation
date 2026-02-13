@@ -90,6 +90,17 @@ export const test = base.extend<TmsFixtures>({
 
     await use(remotePage);
 
+    // Mark the LT session with pass/fail status so the dashboard reflects results
+    const status = testInfo.status === 'passed' ? 'passed' : 'failed';
+    const remark = testInfo.status === 'passed'
+      ? `Test passed in ${testInfo.duration}ms`
+      : `Test failed: ${testInfo.error?.message?.slice(0, 200) ?? 'unknown error'}`;
+
+    await remotePage.evaluate(
+      () => {},
+      `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status, remark } })}`,
+    );
+
     await context.close();
     await browser.close();
   },
