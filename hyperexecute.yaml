@@ -1,12 +1,12 @@
 ---
-version: 0.1
+version: "0.1"
 globalTimeout: 90
-testSuiteTimeout: 60
+testSuiteTimeout: 30
 testSuiteStep: 10
 
 runson: linux
 autosplit: true
-concurrency: 5
+concurrency: 15
 
 runtime:
   language: node
@@ -15,11 +15,14 @@ runtime:
 env:
   TEST_ENV: ${TEST_ENV}
   TEST_SUITE: ${TEST_SUITE}
-  REPORT_LAB_ENABLED: "true"
-  REPORT_LAB_URL: ${REPORT_LAB_URL}
-  SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
-  SLACK_CHANNEL: ${SLACK_CHANNEL}
-  SLACK_MENTIONS: ${SLACK_MENTIONS}
+  TEST_MODE: "remote"
+  LT_PROFILE: ${LT_PROFILE}
+  LT_RUN_PROFILE: "regression"
+  LT_BUILD_ID: ${LT_BUILD_ID}
+  LT_USERNAME: ${LT_USERNAME}
+  LT_ACCESS_KEY: ${LT_ACCESS_KEY}
+  AUTH_EMAIL: ${AUTH_EMAIL}
+  AUTH_PASSWORD: ${AUTH_PASSWORD}
   HE_BUILD_ID: ${HE_BUILD_ID}
 
 cacheKey: '{{ checksum "package-lock.json" }}'
@@ -28,31 +31,23 @@ cacheDirectories:
   - /home/user/.cache/ms-playwright
 
 globalPre:
-  - npm ci
-  - npx playwright install chromium --with-deps
-  - npx tsx scripts/report-lab.ts start
+  commands:
+    - npm ci
 
 pre:
-  - npx playwright test --project setup
+  - npm ci
 
 testDiscovery:
   type: raw
-  mode: dynamic
-  command: grep -rl "${TEST_SUITE}" tests/ --include="*.spec.ts" | sed 's|tests/||'
+  mode: remote
+  command: node scripts/discover-tests.js --env $TEST_ENV --grep "${TEST_SUITE}"
 
-testRunnerCommand: node scripts/run-tests.js --env $TEST_ENV --grep $TEST_SUITE --retries 2 -- tests/$test
+testRunnerCommand: node scripts/run-tests.js --env $TEST_ENV --mode remote --run-profile regression --grep "${TEST_SUITE}" --retries 2 -- tests/$test
 
 post:
-  - npx tsx scripts/report-lab.ts create_tests
-
-globalPost:
-  - npx tsx scripts/report-lab.ts end
-  - npx tsx scripts/report-lab.ts notify
+  - echo "Test suite complete"
 
 uploadArtefacts:
-  - name: report-lab-results
-    path:
-      - report-lab-results/
   - name: playwright-report
     path:
       - playwright-report/
