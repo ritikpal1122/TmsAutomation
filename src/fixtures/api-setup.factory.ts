@@ -35,7 +35,9 @@ export function createApiSetup(tmsApi: TmsApi): { setup: ApiSetup; cleanup: () =
   const cleanup = async () => {
     for (const id of createdProjectIds) {
       if (id) {
-        await tmsApi.deleteProject(authToken, id).catch(() => {});
+        await tmsApi.deleteProject(authToken, id).catch((err) => {
+          console.warn(`[Cleanup] Failed to delete project ${id}: ${err}`);
+        });
       }
     }
   };

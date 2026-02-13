@@ -122,12 +122,13 @@ export class InsightsPage extends BasePage {
         console.log(`[Polling ${metricName}] Attempt ${attempt}: Element not found, retrying...`);
       }
 
-      // Randomly choose refresh strategy
-      const strategy = Math.floor(Math.random() * 3);
-      if (strategy === 0) {
+      // Deterministic round-robin refresh strategy
+      const strategies = ['refresh', 'reload', 'wait'] as const;
+      const strategy = strategies[attempt % strategies.length];
+      if (strategy === 'refresh') {
         console.log(`[Polling ${metricName}] Clicking refresh button...`);
         await this.loc(L.refreshButton).click().catch(() => {});
-      } else if (strategy === 1) {
+      } else if (strategy === 'reload') {
         console.log(`[Polling ${metricName}] Reloading page...`);
         await this.page.reload();
         await this.navigateToInsights();

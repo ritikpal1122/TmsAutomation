@@ -3,6 +3,7 @@ import { BasePage } from '../../utils/base.page.js';
 import { DatasetLocators as L } from './dataset.locators.js';
 import { TIMEOUTS, RANDOM_LENGTH } from '../../config/constants.js';
 import { randomString } from '../../utils/random.helper.js';
+import { waitForNetworkIdle } from '../../utils/wait.helper.js';
 
 export class DatasetPage extends BasePage {
   datasetName = `Dataset_${randomString(RANDOM_LENGTH.medium)}`;
@@ -149,8 +150,7 @@ export class DatasetPage extends BasePage {
       await this.page.keyboard.type('TestValue2');
       await this.page.waitForTimeout(1000);
       await this.loc(L.datasetSaveBtn).click();
-      await this.page.waitForTimeout(3000);
-      await this.page.waitForTimeout(2000);
+      await waitForNetworkIdle(this.page);
     });
   }
 

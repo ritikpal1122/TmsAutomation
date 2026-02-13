@@ -6,6 +6,7 @@ export async function waitForNetworkIdle(page: Page, timeout = TIMEOUTS.medium):
   try {
     await page.waitForLoadState('networkidle', { timeout });
   } catch {
+    console.warn('[waitForNetworkIdle] networkidle timed out, falling back to domcontentloaded');
     await page.waitForLoadState('domcontentloaded', { timeout: TIMEOUTS.short });
   }
 }
