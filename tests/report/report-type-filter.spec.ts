@@ -9,7 +9,7 @@ test.describe('Report - Type Filter', {
   ],
 }, () => {
   test('should create a report with type filter', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
-    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'Type', value: 'Functional' }] };
+    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'Type' as const, value: 'Functional' }] };
     await setupReportProject(opts);
     await configureReportFilters(opts);
     await generateAndVerifyReport(reportPage, 1);

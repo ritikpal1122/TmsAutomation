@@ -9,7 +9,7 @@ test.describe('Report - Status Filter', {
   ],
 }, () => {
   test('should create a report with status filter', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
-    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'Status', value: 'Draft' }] };
+    const opts = { projectPage, testCasePage, testRunPage, reportPage, filters: [{ method: 'Status' as const, value: 'Draft' }] };
     await setupReportProject(opts);
     await configureReportFilters(opts);
     await generateAndVerifyReport(reportPage, 1);
