@@ -33,6 +33,8 @@ Execute the approved improvement batches from Phase 3, one at a time, with stric
 - Phase 3 improvement-plan.md must be approved
 - User must have selected which batches to execute
 - Current git status must be clean (no uncommitted changes)
+- Product context from `reference/PRODUCT_CONTEXT.md` must be loaded (for terminology, entity naming)
+- MCP Integration protocol from `reference/MCP_INTEGRATION.md` must be read (for browser verification)
 
 ---
 
@@ -74,6 +76,30 @@ Execute the approved improvement batches from Phase 3, one at a time, with stric
 │   - Fix the issue (max 3 attempts)                          │
 │   - If still failing after 3 attempts → ROLLBACK batch      │
 │   - Report failure to user                                  │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─ Step 3.5: MCP VERIFICATION (if locators changed) ────────┐
+│ If this batch modified locators or page objects:             │
+│                                                              │
+│   1. Check MCP availability (browser_navigate to base URL)  │
+│      - If unavailable → skip, note in log, proceed          │
+│   2. For each page with modified locators:                   │
+│      a. Navigate to the product page (use PRODUCT_CONTEXT    │
+│         URL patterns for the correct page)                   │
+│      b. Take browser_snapshot to get current DOM/a11y tree  │
+│      c. Verify modified selectors find correct elements      │
+│      d. Take browser_take_screenshot as evidence             │
+│   3. Store screenshots in runs/{timestamp}/screenshots/      │
+│   4. Record results: PASS (selector works) / FAIL (broken)  │
+│   5. If FAIL → fix selector immediately, re-verify          │
+│                                                              │
+│ See reference/MCP_INTEGRATION.md for full protocol.          │
+│                                                              │
+│ RULES:                                                       │
+│   - MCP verification is READ-ONLY (no destructive actions)  │
+│   - Group all locator checks per page (one navigate per page)│
+│   - If MCP unavailable, proceed without (code-only mode)    │
+│   - Don't verify every locator — focus on MODIFIED ones      │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─ Step 4: REPORT ────────────────────────────────────────────┐
@@ -134,6 +160,12 @@ Every line of code written or modified must pass this test: **"Can a newcomer wh
   □ Return types explicitly declared on public functions
   □ Generic types used where patterns are reusable
   □ Optional parameters marked with `?`, not `| undefined`
+
+□ PRODUCT TERMINOLOGY (reference: PRODUCT_CONTEXT.md Glossary)
+  □ Use official product terms in names (Test Case, not tc; Test Run, not execution)
+  □ Method names match product actions (createTestCase, not addTest)
+  □ Variable names match product entities (testRunId, not executionId)
+  □ Comments reference product concepts accurately
 ```
 
 ### JSDoc Standards
@@ -408,6 +440,13 @@ Maintain a running log saved to `execution-log.md`:
 - TypeScript compilation: ✅ PASS
 - Import resolution: ✅ PASS
 - Test listing: ✅ PASS (66 tests found)
+
+### MCP Verification (if applicable)
+- Mode: browser-assisted / code-only / skipped
+- Pages verified: N
+- Selectors verified: N/N PASS
+- Screenshots: `screenshots/batch-A-*.png`
+- Issues found: [none / list]
 
 ### Metrics Impact
 | Metric | Before | After | Delta |

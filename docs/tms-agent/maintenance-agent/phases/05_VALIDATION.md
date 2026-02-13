@@ -76,7 +76,18 @@ For EVERY file modified in Phase 4, verify:
 **Reference:** `reference/CODE_QUALITY_STANDARDS.md`
 **If fails:** Return to Phase 4 to fix specific files before proceeding
 
-### 4. Framework Pattern Consistency
+### 4. Product Domain Alignment
+```
+Verify (reference: PRODUCT_CONTEXT.md):
+- Terminology: All modified code uses official product terms
+- Entity alignment: Page objects still map correctly to product entities
+- API parity: API helpers still match product API endpoints
+- Quirk handling: Known UI quirks are properly handled in modified code
+- No new terminology mismatches introduced by changes
+```
+**If fails:** Return to Phase 4 to correct terminology or alignment issues
+
+### 5. Framework Pattern Consistency
 ```
 Verify:
 - All page objects extend BasePage
@@ -86,7 +97,15 @@ Verify:
 - No orphaned files (files that nothing imports)
 ```
 
-### 5. Dry Run (Optional — User Must Approve)
+### 6. MCP Visual Verification (Optional — If MCP Available)
+```bash
+# Navigate to 2-3 key product pages affected by changes
+# Take screenshots as final evidence
+# Verify critical elements are findable
+```
+**Only run if MCP was used in Phase 4.** Store screenshots in `runs/{timestamp}/screenshots/`.
+
+### 7. Dry Run (Optional — User Must Approve)
 ```bash
 # Run a single quick test to verify framework works
 npx playwright test tests/project/project-crud.spec.ts --reporter=list
@@ -111,6 +130,9 @@ Generate a metrics comparison table:
 | Any types | N | N | -N | 0 | ✅/❌ |
 | Code duplication areas | N | N | -N | 0 | ✅/❌ |
 | Test boilerplate (lines) | N | N | -N | ≤10 | ✅/❌ |
+| Terminology mismatches | N | N | -N | 0 | ✅/❌ |
+| Product domain alignment | X/10 | X/10 | +X | ≥8/10 | ✅/❌ |
+| MCP-verified selectors | - | N/N | - | 100% PASS | ✅/❌/N/A |
 ```
 
 ---
@@ -159,7 +181,9 @@ Save to `validation-report.md`:
 | TypeScript compilation | ✅/❌ | ... |
 | Test discovery | ✅/❌ | N tests found |
 | Import resolution | ✅/❌ | ... |
+| Product domain alignment | ✅/❌ | X/10 score |
 | Pattern consistency | ✅/❌ | ... |
+| MCP verification | ✅/❌/N/A | N selectors verified (or "MCP unavailable") |
 
 ---
 
@@ -176,7 +200,8 @@ Save to `validation-report.md`:
 | CI/CD | X/10 | X/10 |
 | TypeScript | X/10 | X/10 |
 | Documentation | X/10 | X/10 |
-| **OVERALL** | **X/100** | **X/100** |
+| Product Domain Alignment | X/10 | X/10 |
+| **OVERALL** | **X/110** | **X/110** |
 
 ---
 

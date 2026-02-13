@@ -26,7 +26,8 @@ Apply multi-perspective analysis to the scan report findings, uncovering issues 
 ## Prerequisites
 
 - Phase 1 scan-report.md must be complete and approved
-- All scan dimension data must be available
+- All scan dimension data must be available (including Dimension 11: Product Domain Alignment)
+- Product context from `reference/PRODUCT_CONTEXT.md` must be loaded (Phase 0)
 
 ---
 
@@ -47,6 +48,7 @@ Apply multi-perspective analysis to the scan report findings, uncovering issues 
 | **Coupling** | Dependencies between modules, circular imports |
 | **Scalability** | Can this handle 200+ tests? 50+ page objects? New environments? |
 | **Type Safety** | TypeScript strictness, generic usage, `any` elimination |
+| **Product Entity Alignment** | Do page objects mirror the product entity model? Is there a 1:1 mapping between product features and page modules? Are missing page objects flagged? (Reference: PRODUCT_CONTEXT.md Entity Model) |
 
 **R1 Critique Template:**
 ```markdown
@@ -87,6 +89,7 @@ Apply multi-perspective analysis to the scan report findings, uncovering issues 
 | **Retries** | Retry logic quality, retry hiding real bugs |
 | **Error Handling** | Graceful failures, useful error messages |
 | **CI Stability** | Worker count, timeouts, resource contention |
+| **Product Quirk Handling** | Do tests handle Known UI Quirks from PRODUCT_CONTEXT.md? (toast auto-dismiss, search debounce, dialog animations, lazy loading). Are wait strategies aligned with documented product behavior? |
 
 **Flakiness Checklist (MUST check every test file):**
 ```
@@ -141,6 +144,7 @@ Apply multi-perspective analysis to the scan report findings, uncovering issues 
 | **IDE Support** | TypeScript IntelliSense, go-to-definition, auto-import |
 | **Documentation** | Inline comments where needed, JSDoc for public APIs |
 | **Test Authoring** | How many lines of boilerplate to write a new test? |
+| **Product Terminology** | Do file names, method names, variable names, and test descriptions use official product terminology from PRODUCT_CONTEXT.md? Can a developer who reads the product docs find the corresponding test code easily? |
 
 **DX Measurement:**
 ```
@@ -192,6 +196,7 @@ Target: ≤5 imports, ≤10 lines boilerplate, full IDE discovery
 | **Resource Usage** | Browser instances, memory leaks, connection pooling |
 | **Smart Execution** | Tag-based selection, affected-area testing, smoke vs regression |
 | **Reporting** | Reporter overhead, unnecessary reporters in CI |
+| **Product Feature Prioritization** | Are tests for P0 features (from PRODUCT_CONTEXT.md Feature Map) tagged as @smoke? Is CI time proportionally spent on business-critical features? Are rate limits and concurrency constraints from PRODUCT_CONTEXT.md respected in CI config? |
 
 **CI Optimization Checklist:**
 ```
@@ -240,6 +245,7 @@ Target: ≤5 imports, ≤10 lines boilerplate, full IDE discovery
 | **Assumptions** | What assumptions are the other personas making? |
 | **Risk** | What's the risk of making these changes vs not? |
 | **Blind Spots** | What did everyone else miss? |
+| **Domain Assumptions** | Are other personas making incorrect assumptions about the product? Is the product documentation itself potentially stale vs the actual product? Are "coverage gaps" truly gaps, or intentionally not automated? Challenge product-based claims with skepticism. |
 
 **R5 Special Authority:**
 ```

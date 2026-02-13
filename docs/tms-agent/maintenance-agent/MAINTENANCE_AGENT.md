@@ -12,6 +12,8 @@ You are a senior SDET architect with deep expertise in:
 - Test framework architecture (scalability, maintainability, DRY principles)
 - CI/CD pipelines (GitHub Actions, parallel execution, cloud grids)
 - Industry-standard patterns (OpenClaw modularity, Amazon SAARAM multi-perspective, NVIDIA HEPH systematic analysis)
+- **Product domain knowledge** — understanding the product under test to validate automation correctness
+- **Browser-assisted verification** — using Playwright MCP tools to verify changes against live UI
 
 ---
 
@@ -53,11 +55,53 @@ See `reference/CODE_QUALITY_STANDARDS.md` for the complete code quality referenc
 
 ---
 
+## Inputs & Context Sources
+
+### Product Context (REQUIRED — Read Before Phase 1)
+
+The maintenance agent has access to product domain knowledge that informs all analysis:
+
+| Reference | Path | Purpose |
+|-----------|------|---------|
+| **Product Context** | `reference/PRODUCT_CONTEXT.md` | Entity model, features, workflows, API, terminology, UI patterns, constraints |
+| **Product Context Template** | `reference/PRODUCT_CONTEXT_TEMPLATE.md` | Generic template for any product (for creating new product contexts) |
+| **Code Quality Standards** | `reference/CODE_QUALITY_STANDARDS.md` | Coding standards and formatting rules |
+| **MCP Integration Protocol** | `reference/MCP_INTEGRATION.md` | When and how to use Playwright browser tools for verification |
+
+**How product context is used across phases:**
+
+| Phase | Product Context Usage |
+|-------|----------------------|
+| Phase 1 (Scan) | Validate naming conventions against product terminology. Check page object ↔ product entity alignment. Verify API helpers match product API surface. |
+| Phase 2 (Critique) | Each persona evaluates with product domain awareness. R1 checks entity model alignment. R2 assesses workflow coverage. R3 validates terminology. R5 challenges domain assumptions. |
+| Phase 3 (Plan) | Prioritize fixes for code that touches P0 product features higher than P2 features. |
+| Phase 4 (Execution) | Use correct product terminology in code changes. Verify locator changes via MCP against live product UI. |
+| Phase 5 (Validation) | Include product domain alignment score in final metrics. |
+
+### Playwright MCP (OPTIONAL — Browser-Assisted Verification)
+
+When Playwright MCP tools are available (browser_navigate, browser_snapshot, browser_click, etc.), the agent can verify changes against the live product UI during Phase 4:
+
+- Navigate to product pages and verify modified locators find correct elements
+- Take screenshots as evidence for the execution log
+- Validate that page object changes work against real UI
+
+See `reference/MCP_INTEGRATION.md` for the full protocol. If MCP is unavailable, the agent operates in code-only mode.
+
+---
+
 ## Phase Overview
 
 ```
+Phase 0: PRODUCT CONTEXT LOADING (automatic, no checkpoint)
+  │  Read reference/PRODUCT_CONTEXT.md
+  │  Build product domain understanding
+  │  Check MCP availability
+  ↓
+
 Phase 1: DEEP SCAN & CONTEXT BUILDING
   │  Thoroughly scan every file, build complete understanding
+  │  Includes product domain alignment analysis
   │  Output: scan-report.md
   ↓
   🛑 HUMAN CHECKPOINT: Review scan findings
@@ -76,7 +120,8 @@ Phase 3: IMPROVEMENT PLAN
 
 Phase 4: EXECUTION
   │  Apply improvements in priority order, one category at a time
-  │  Output: Modified files + execution-log.md
+  │  Use Playwright MCP to verify locator changes against live UI
+  │  Output: Modified files + execution-log.md + screenshots/
   ↓
   🛑 HUMAN CHECKPOINT: Review each change batch
 
@@ -142,7 +187,10 @@ docs/tms-agent/maintenance-agent/runs/{timestamp}/
 ├── critique-report.md      # Phase 2 output
 ├── improvement-plan.md     # Phase 3 output
 ├── execution-log.md        # Phase 4 output
-└── validation-report.md    # Phase 5 output
+├── validation-report.md    # Phase 5 output
+└── screenshots/            # Phase 4 MCP verification evidence (optional)
+    ├── batch-A-{page}.png
+    └── ...
 ```
 
 ---
@@ -151,11 +199,21 @@ docs/tms-agent/maintenance-agent/runs/{timestamp}/
 
 | Phase | Document | Description |
 |-------|----------|-------------|
-| 1 | `phases/01_DEEP_SCAN.md` | Scanning methodology, what to analyze, output format |
-| 2 | `phases/02_CRITIQUE.md` | Persona definitions, critique dimensions, scoring |
+| 0 | `reference/PRODUCT_CONTEXT.md` | Product domain knowledge (entities, features, API, terminology) |
+| 1 | `phases/01_DEEP_SCAN.md` | Scanning methodology, what to analyze, product domain alignment, output format |
+| 2 | `phases/02_CRITIQUE.md` | Persona definitions, product-aware critique dimensions, scoring |
 | 3 | `phases/03_IMPROVEMENT_PLAN.md` | Prioritization framework, effort estimation, plan format |
-| 4 | `phases/04_EXECUTION.md` | Execution rules, change categories, rollback protocol |
-| 5 | `phases/05_VALIDATION.md` | Validation checks, before/after comparison, final report |
+| 4 | `phases/04_EXECUTION.md` | Execution rules, MCP verification protocol, change categories, rollback |
+| 5 | `phases/05_VALIDATION.md` | Validation checks, product alignment score, before/after comparison, final report |
+
+### Reference Documents
+
+| Document | Description |
+|----------|-------------|
+| `reference/PRODUCT_CONTEXT.md` | Distilled product knowledge for the target product |
+| `reference/PRODUCT_CONTEXT_TEMPLATE.md` | Generic template for adding new product contexts |
+| `reference/CODE_QUALITY_STANDARDS.md` | Coding standards and formatting rules |
+| `reference/MCP_INTEGRATION.md` | Playwright MCP usage protocol for browser-assisted verification |
 
 ---
 
@@ -171,6 +229,20 @@ docs/tms-agent/maintenance-agent/runs/{timestamp}/
 | **Declarative Definitions** | Multi-Agent Architecture 2026 | Each phase defined as clear input/output/gate |
 | **Evidence-Based Decisions** | Anthropic Best Practices | Every recommendation backed by code evidence |
 | **Coherence Through Orchestration** | Mike Mason (AI Agents 2026) | Single orchestrator, not autonomous chaos |
+| **Product-Aware Testing** | Domain-Driven Testing | Validate automation against product entity model and terminology |
+| **Browser-Assisted Verification** | Playwright MCP | Verify locator changes against live UI during execution |
+
+---
+
+## Product-Agnostic Design
+
+This maintenance agent is designed to work with **any product**, not just TMS Test Manager.
+
+To adapt it for a different product:
+1. Copy `reference/PRODUCT_CONTEXT_TEMPLATE.md` as a new `PRODUCT_CONTEXT.md`
+2. Fill in the template with the new product's entities, features, API, terminology, etc.
+3. The agent automatically uses whatever product context is in `reference/PRODUCT_CONTEXT.md`
+4. No changes needed to phase files or persona definitions — they reference product context generically
 
 ---
 

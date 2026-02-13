@@ -8,6 +8,8 @@
 
 Build a comprehensive context map of the entire framework — every file, every pattern, every dependency — so that subsequent phases can make informed, evidence-based decisions.
 
+**Product-Aware Scanning:** This phase uses the product context from `reference/PRODUCT_CONTEXT.md` to validate that code aligns with the product domain — correct terminology, entity coverage, API parity, and workflow alignment.
+
 ---
 
 ## 🚨 CRITICAL RULES
@@ -82,6 +84,13 @@ src/pages/
 - Are component classes (Toast, Delete, Search) reused properly?
 - Is there a barrel export (index.ts) for pages?
 
+**Product Domain Alignment (from PRODUCT_CONTEXT.md):**
+- Do page object modules map to product entities? (e.g., Project, Test Case, Test Run, Folder, Module, Dataset, Milestone)
+- Are page object names and method names using official product terminology? (see Terminology Glossary in PRODUCT_CONTEXT.md)
+- Are there product features listed in the Feature Map that have NO corresponding page object?
+- Do page methods cover the key user actions listed in the Feature Map? (create, edit, delete, list, search, filter)
+- Do locators align with the UI Component Patterns documented in PRODUCT_CONTEXT.md? (Toast, Dialog, DataTable, etc.)
+
 **Locator Quality Assessment:**
 ```
 For EACH locator file, classify selectors as:
@@ -95,9 +104,17 @@ Calculate: Resilient% / Moderate% / Fragile% per file
 **Output format:**
 ```markdown
 ### Page Object Assessment
-| Module | Has Locators File | Has Page File | Extends BasePage | Uses test.step() | Locator Quality |
-|--------|------------------|--------------|-----------------|------------------|----------------|
-| project | ✅ | ✅ | ✅ | ⚠️ 60% | 🟡 40/40/20 |
+| Module | Has Locators File | Has Page File | Extends BasePage | Uses test.step() | Locator Quality | Product Entity Match |
+|--------|------------------|--------------|-----------------|------------------|----------------|---------------------|
+| project | ✅ | ✅ | ✅ | ⚠️ 60% | 🟡 40/40/20 | ✅ Project |
+| test-run | ✅ | ✅ | ✅ | ✅ | 🟡 30/40/30 | ✅ Test Run |
+
+### Product Entity Coverage
+| Product Entity | Page Object | Methods Cover Key Actions | Gap |
+|---------------|-------------|--------------------------|-----|
+| Project | project.page | create ✅ edit ✅ delete ✅ | None |
+| Test Case | testcase.page | create ✅ edit ⚠️ | Version history missing |
+| Dataset | - | - | No page object |
 ```
 
 ---
@@ -122,6 +139,13 @@ tests/
 - Is there proper cleanup (via fixtures or explicit)?
 - Average test length (steps per test)?
 - Are there any flaky patterns (bare waits, race conditions)?
+
+**Product Domain Alignment (from PRODUCT_CONTEXT.md):**
+- Do test descriptions and `test.describe()` names use official product terminology?
+- Do test scenarios align with the Workflow Catalog? (W1-W7 in PRODUCT_CONTEXT.md)
+- Are test assertions checking product-meaningful outcomes (not just UI state)?
+- Are product constraints reflected in tests? (e.g., max 100 test steps, rate limits)
+- Do tests handle Known UI Quirks documented in PRODUCT_CONTEXT.md? (toast auto-dismiss, search debounce, etc.)
 
 **Flakiness Pattern Detection:**
 ```
@@ -215,6 +239,13 @@ src/api/
 - Are authentication headers handled correctly?
 - Is there proper logging for debugging API failures?
 - Are API methods reusable across fixtures and tests?
+
+**Product API Alignment (from PRODUCT_CONTEXT.md):**
+- Do the API helpers cover all endpoints in the product API Reference? (test-cases, test-runs, folders, jira, variables, secrets)
+- Are API method names consistent with the product API endpoint naming?
+- Are request/response types matching the documented field mappings?
+- Is the authentication pattern matching the product's Basic Auth requirement?
+- Are rate limits documented in PRODUCT_CONTEXT.md considered in API fixture design?
 
 ---
 
@@ -322,6 +353,87 @@ TEST-RESULTS.md
 
 ---
 
+### Dimension 11: Product Domain Alignment (Cross-Cutting)
+
+> This dimension synthesizes product context checks done in Dimensions 2, 3, and 6 into a unified assessment.
+
+**Prerequisites:** Read `reference/PRODUCT_CONTEXT.md` before this dimension.
+
+**What to assess:**
+
+#### 11a. Entity-to-Code Mapping
+```
+For each product entity in PRODUCT_CONTEXT.md Entity Model:
+- Does a page object exist for it?
+- Does an API helper exist for it?
+- Do test specs exercise it?
+- Are fixtures available for setup/teardown?
+
+Build a mapping table:
+| Product Entity | Page Object | API Helper | Test Specs | Fixture |
+|---------------|-------------|-----------|-----------|---------|
+```
+
+#### 11b. Terminology Consistency
+```
+Compare code naming against PRODUCT_CONTEXT.md Terminology Glossary:
+- Are file names using official terms? (test-run.page.ts, not execution.page.ts)
+- Are method names using official terms? (createTestCase, not addTest)
+- Are variable names using official terms? (testRunId, not executionId)
+- Are test descriptions using official terms?
+
+Flag any mismatches with file:line references.
+```
+
+#### 11c. Workflow Coverage Assessment
+```
+For each workflow in PRODUCT_CONTEXT.md Workflow Catalog (W1-W7):
+- Is the workflow covered by end-to-end tests?
+- If partially covered, which steps are missing?
+- Note: This is for informational purposes only — the maintenance agent
+  fixes existing tests, it does not create new ones.
+```
+
+#### 11d. Known Quirk Handling
+```
+For each Known UI Quirk in PRODUCT_CONTEXT.md:
+- Does the framework already handle this quirk?
+- Are there test failures that might be caused by unhandled quirks?
+- Are wait strategies appropriate for documented quirks?
+  (e.g., toast auto-dismiss → short timeout on toast assertions)
+```
+
+**Output format:**
+```markdown
+### Product Domain Alignment Assessment
+
+#### Entity Coverage Matrix
+| Product Entity | Page Object | API Helper | Test Specs | Coverage |
+|---------------|-------------|-----------|-----------|----------|
+| Project | ✅ | ✅ | 5 specs | GOOD |
+| Dataset | ❌ | ❌ | 0 specs | MISSING |
+
+#### Terminology Mismatches
+| Code Location | Current Term | Official Term | Impact |
+|--------------|-------------|--------------|--------|
+| src/pages/... | executionPage | testRunPage | Naming confusion |
+
+#### Workflow Coverage
+| Workflow | E2E Coverage | Missing Steps |
+|---------|-------------|--------------|
+| W1: Project Setup | FULL | - |
+| W3: Test Run Execution | PARTIAL | Scheduled execution |
+
+#### Quirk Handling
+| Quirk | Handled | Evidence |
+|-------|---------|---------|
+| Toast auto-dismiss | ⚠️ Inconsistent | Some tests waitFor, some don't |
+
+#### Domain Alignment Score: X/10
+```
+
+---
+
 ## Output: Scan Report
 
 After completing ALL 10 dimensions, compile findings into `scan-report.md`:
@@ -342,6 +454,7 @@ After completing ALL 10 dimensions, compile findings into `scan-report.md`:
 | 1. Configuration | X/10 | N | N |
 | 2. Page Objects | X/10 | N | N |
 | ...
+| 11. Product Domain Alignment | X/10 | N | N |
 
 ## Critical Findings (must fix)
 1. [Finding with file:line reference]
@@ -363,6 +476,10 @@ After completing ALL 10 dimensions, compile findings into `scan-report.md`:
 | Flaky pattern count | N |
 | TypeScript strictness | X% |
 | Code duplication | X areas |
+| Product entity coverage | X/Y entities |
+| Terminology mismatches | N |
+| Workflow coverage | X/Y workflows |
+| Domain alignment score | X/10 |
 ```
 
 ---
@@ -386,6 +503,9 @@ PARALLEL GROUP 1: Dimensions 1, 7, 10 (config & docs)
 PARALLEL GROUP 2: Dimensions 2, 3 (pages & tests)
 PARALLEL GROUP 3: Dimensions 4, 5, 6 (fixtures, utils, API)
 PARALLEL GROUP 4: Dimensions 8, 9 (CI/CD & TypeScript quality)
+SEQUENTIAL (after all groups): Dimension 11 (product domain alignment — depends on Groups 2, 3, 4)
 ```
 
 Use the Task tool with Explore subagents for each parallel group.
+
+**Note:** Dimension 11 requires PRODUCT_CONTEXT.md to be loaded first (Phase 0) and synthesizes findings from Dimensions 2, 3, and 6, so it runs after the parallel groups complete.
