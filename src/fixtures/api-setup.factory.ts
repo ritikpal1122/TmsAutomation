@@ -13,18 +13,18 @@ export function createApiSetup(tmsApi: TmsApi): { setup: ApiSetup; cleanup: () =
   const setup: ApiSetup = {
     async createProject(name, description?) {
       const { body } = await tmsApi.createProject(authToken, name, description);
-      const id = String((body as Record<string, unknown>).id ?? (body as Record<string, unknown>).project_id ?? '');
+      const id = body.id ?? body.project_id ?? '';
       createdProjectIds.push(id);
       return { id, name };
     },
     async createTestCase(projectId, title) {
       const { body } = await tmsApi.createTestCase(authToken, projectId, title);
-      const id = String((body as Record<string, unknown>).id ?? (body as Record<string, unknown>).test_case_id ?? '');
+      const id = body.id ?? body.test_case_id ?? '';
       return { id, title };
     },
     async createTestRun(projectId, name, testCaseIds?) {
       const { body } = await tmsApi.createTestRun(authToken, projectId, name, testCaseIds);
-      const id = String((body as Record<string, unknown>).id ?? (body as Record<string, unknown>).test_run_id ?? '');
+      const id = body.id ?? body.test_run_id ?? '';
       return { id, name };
     },
     async deleteProject(projectId) {

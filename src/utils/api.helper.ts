@@ -61,7 +61,13 @@ export class ApiHelper {
       ...(data !== undefined ? { data } : {}),
       headers,
     });
-    const body = (await response.json().catch(() => ({}) as T));
+    let body: T;
+    try {
+      body = await response.json() as T;
+    } catch {
+      console.warn(`[API] Non-JSON response (status ${response.status()}) from ${url}`);
+      body = {} as T;
+    }
     return { status: response.status(), body };
   }
 
