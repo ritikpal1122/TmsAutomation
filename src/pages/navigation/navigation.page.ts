@@ -3,6 +3,26 @@ import { BasePage } from '../base.page.js';
 import { NavigationLocators as L } from './navigation.locators.js';
 import { TIMEOUTS } from '../../config/constants.js';
 
+const Nav = {
+  hamburgerSidebar: `//button[@class=" ltch-top-nav-hamburger-menu"]`,
+  projectSidebar: `//span[@class="ltch-product-name"]`,
+  projectList: `(//span[span[text()='Test Manager']])[1]`,
+  tmsSidebar: `//span[@class='ltch-product-name' and text()='Test Manager']`,
+  tmsVisible: `//span[text()='Test Manager']`,
+  tmsCtaFalcon: `//div[@aria-label='Test Manager']`,
+  tmsCtaRealDevice: `//div[@id="test-case-manager"]`,
+  sidebarSettings: `//span[text()='Settings']`,
+  automationSidebar: `//span[text()='Automation']`,
+  kaneaiSidebar: `(//a[@aria-label="KaneAI"])`,
+  moduleSidebar: `//a[@aria-label='Modules']`,
+  testCaseNav: `//span[text()='Test Cases']`,
+  testRunNav: `//span[text()='Test Runs']`,
+  buildNav: `//a[text()='Builds']`,
+  insightPageNav: `//a[span[text()='Insights']]`,
+  settingStage: `//a[text()='System Fields']`,
+  reportsTab: `//a[span[text()='Reports']]`,
+} as const;
+
 export class NavigationPage extends BasePage {
   constructor(page: Page) {
     super(page);
@@ -51,7 +71,16 @@ export class NavigationPage extends BasePage {
   }
 
   async navigateToModules(): Promise<void> {
-    await this.loc(L.moduleSidebar).click();
+    await test.step('Navigate to Modules from sidebar', async () => {
+      const modulesLink = this.loc(Nav.moduleSidebar);
+      const isVisible = await modulesLink.isVisible().catch(() => false);
+      if (!isVisible) {
+        await this.loc(Nav.tmsSidebar).click();
+        await this.page.waitForTimeout(1000);
+      }
+      await modulesLink.click();
+      await this.page.waitForLoadState('domcontentloaded');
+    });
   }
 
   async navigateToReports(): Promise<void> {

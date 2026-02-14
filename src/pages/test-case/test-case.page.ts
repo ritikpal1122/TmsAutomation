@@ -29,13 +29,26 @@ export class TestCasePage extends BasePage {
   }
 
   async openTestCase(title?: string): Promise<void> {
-    await this.loc(L.createdTC(title ?? this.testCaseTitle)).click();
+    await test.step('Open test case', async () => {
+      const link = this.loc(L.createdTC(title ?? this.testCaseTitle));
+      // Use page.goto() with the href to force a full navigation (the SPA
+      // intercepts clicks and stays on web-frontend, which can't render the
+      // test case detail page — it only works on test-manager domain).
+      const href = await link.getAttribute('href');
+      if (href) {
+        await this.page.goto(href);
+      } else {
+        await link.click();
+      }
+      await this.page.waitForLoadState('domcontentloaded');
+    });
   }
 
   async selectTestCaseType(type = 'Functional'): Promise<void> {
     await test.step(`Select test case type: ${type}`, async () => {
       await this.loc(L.typeDropdownTestcaseStage).click();
       await this.loc(this.tpl(L.selectTestType, { type })).click();
+      await this.page.waitForTimeout(500);
     });
   }
 
@@ -43,20 +56,25 @@ export class TestCasePage extends BasePage {
     await test.step('Select automation status: Automated', async () => {
       await this.loc(L.automationDropdownTestcaseStage).click();
       await this.loc(L.selectAutomatedAutomationStatus).click();
+      await this.page.waitForTimeout(500);
     });
   }
 
   async selectTestCaseStatus(): Promise<void> {
-    await test.step('Select test case status: Open', async () => {
+    await test.step('Select test case status: Live', async () => {
       await this.loc(L.statusDropdownTestcaseStage).click();
+      await this.page.waitForTimeout(500);
       await this.loc(L.selectOpenTestStatus).click();
+      await this.page.waitForTimeout(500);
     });
   }
 
   async selectPriority(priority: string): Promise<void> {
     await test.step(`Select priority: ${priority}`, async () => {
       await this.loc(L.priorityDropdownTestcaseStage).click();
+      await this.page.waitForTimeout(500);
       await this.loc(this.tpl(L.selectHighTestPriority, { priority })).click();
+      await this.page.waitForTimeout(500);
     });
   }
 
@@ -104,12 +122,13 @@ export class TestCasePage extends BasePage {
   async saveChanges(): Promise<void> {
     await test.step('Save test case changes', async () => {
       const saveBtn = this.loc(L.saveTestCase).first();
-      const isEnabled = await saveBtn.isEnabled({ timeout: TIMEOUTS.short }).catch(() => false);
-      if (!isEnabled) return;
+      // Wait for the Save button to become enabled (React may still be re-rendering)
+      await expect(saveBtn).toBeEnabled({ timeout: TIMEOUTS.medium });
       await saveBtn.click({ timeout: TIMEOUTS.long });
       if (await this.isVisible(L.saveTestCaseCommitMessage, TIMEOUTS.medium)) {
         await this.loc(L.saveTestCaseCommitMessage).click();
       }
+      await this.page.waitForTimeout(1000);
     });
   }
 
