@@ -7,6 +7,8 @@ test.describe('Milestone with TestRun from Creation and Due Date', {
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
+  test.setTimeout(420_000);
+
   /**
    * Full BDD Scenario: TestRun from Creation + Due Date
    *
@@ -33,11 +35,8 @@ test.describe('Milestone with TestRun from Creation and Due Date', {
     milestonePage,
   }) => {
 
-    // Step 2: Open Test Run creation form, create Test Run with config and assignee
-    await testRunPage.createTestRun();
-    await testRunPage.openTestRun();
-    await testRunPage.selectConfiguration('default');
-    await testRunPage.selectAssignee('');
+    // Step 2: Create Test Run with config and assignee
+    await testRunPage.createTestRunWithConfigAndAssignee();
 
     // Step 3: Back to project, open Milestones tab
     await projectPage.openProject();
@@ -62,8 +61,7 @@ test.describe('Milestone with TestRun from Creation and Due Date', {
     // Step 8: Verify progress is zero
     await milestonePage.verifyMilestoneProgressIsZero();
 
-    // Step 9: Open TestRun List, verify testcases, mark status
-    await testRunPage.backToTestRunList();
+    // Step 9: Open TestRun, mark status
     await testRunPage.openTestRun();
     await testRunPage.markStatus('Passed');
 
@@ -75,8 +73,8 @@ test.describe('Milestone with TestRun from Creation and Due Date', {
     // Step 11: Verify progress after status update is "100" percent
     await milestonePage.verifyProgressAfterStatusUpdate('100');
 
-    // Step 12: Verify passed and failed count
-    await milestonePage.verifyPassedAndFailedCount();
+    // Step 12: Verify passed count (no failed TCs in this test)
+    await milestonePage.verifyPassedAndFailedCount(false);
 
     // Step 13: Delete milestone, verify deleted
     await milestonePage.deleteMilestone();

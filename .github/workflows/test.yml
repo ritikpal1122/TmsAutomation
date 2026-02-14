@@ -21,6 +21,16 @@ on:
         options:
           - '@smoke'
           - '@regression'
+      auth_email:
+        description: 'Override AUTH_EMAIL (leave empty to use secret)'
+        required: false
+        default: ''
+        type: string
+      auth_password:
+        description: 'Override AUTH_PASSWORD (leave empty to use secret)'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   test:
@@ -44,15 +54,17 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
+      - name: Resolve auth credentials
+        run: |
+          echo "AUTH_EMAIL=${{ github.event.inputs.auth_email || secrets.AUTH_EMAIL }}" >> "$GITHUB_ENV"
+          echo "AUTH_PASSWORD=${{ github.event.inputs.auth_password || secrets.AUTH_PASSWORD }}" >> "$GITHUB_ENV"
+
       - name: Run tests
         run: npm run test:ci
         env:
           TEST_ENV: ${{ github.event.inputs.environment || 'stage' }}
           LT_USERNAME: ${{ secrets.LT_USERNAME }}
           LT_ACCESS_KEY: ${{ secrets.LT_ACCESS_KEY }}
-          AUTH_EMAIL: ${{ secrets.AUTH_EMAIL }}
-          AUTH_PASSWORD: ${{ secrets.AUTH_PASSWORD }}
-          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
           CI: true
 
       - name: Upload Playwright HTML report

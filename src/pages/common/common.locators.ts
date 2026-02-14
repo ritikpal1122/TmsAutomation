@@ -24,7 +24,7 @@ export const CommonLocators = {
   // ─── Common Form Elements ─────────────────────────
   tagsInput: `input[placeholder='Add Tags separated by enter']`,
   fileInput: `input[type='file']`,
-  openMenuButton: `//button[@aria-label='Open menu']`,
+  openMenuButton: `//button[@data-component='IconButton'][@aria-haspopup='true']`,
 
   // ─── Shared Across Features ───────────────────────
   initialPromptChevron: `//span[text()='Initial prompt']//following-sibling::div//*[contains(@class, 'octicon-chevron-right')]`,

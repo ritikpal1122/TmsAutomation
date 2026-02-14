@@ -3,7 +3,7 @@ import { EnvConfig } from '../../src/config/env.config.js';
 import { ROUTES } from '../../src/config/constants.js';
 
 test.describe('Custom Fields', {
-  tag: ['@regression'],
+  tag: ['@regression' , '@settings'],
   annotation: [
     { type: 'feature', description: 'Settings' },
     { type: 'severity', description: 'normal' },

@@ -110,10 +110,23 @@ export class DatasetPage extends BasePage {
 
   async editDatasetDetails(): Promise<void> {
     await test.step('Edit dataset details', async () => {
-      await this.openDatasetMenu();
-      await this.loc(L.datasetEditOption).click();
-      await this.page.waitForTimeout(2000);
-      const el = this.loc(L.datasetTitleTextarea); await el.click(); await el.clear(); await el.fill(this.updatedDatasetName);
+      // Click the dataset name to enter inline edit mode
+      const nameEl = this.loc(L.datasetDetailName);
+      await nameEl.click();
+      await this.page.waitForTimeout(1000);
+
+      // Check if textarea appeared; if not, try the kebab menu approach
+      if (await this.isVisible(L.datasetTitleTextarea, TIMEOUTS.short)) {
+        const el = this.loc(L.datasetTitleTextarea); await el.click(); await el.clear(); await el.fill(this.updatedDatasetName);
+      } else {
+        // Try via the detail page kebab menu (second kebab on page)
+        const menuBtn = this.page.locator('button[data-component="IconButton"][aria-haspopup="true"]').last();
+        await menuBtn.click();
+        await this.page.waitForTimeout(2000);
+        await this.loc(L.datasetEditOption).click();
+        await this.page.waitForTimeout(2000);
+        const el = this.loc(L.datasetTitleTextarea); await el.click(); await el.clear(); await el.fill(this.updatedDatasetName);
+      }
       await this.page.keyboard.press('Enter');
       await this.page.waitForTimeout(2000);
     });
@@ -196,7 +209,7 @@ export class DatasetPage extends BasePage {
   async verifyDatasetUpdated(): Promise<void> {
     await test.step('Verify dataset updated', async () => {
       await this.page.waitForTimeout(2000);
-      await expect.soft(this.loc(L.datasetByName(this.updatedDatasetName))).toBeVisible({ timeout: TIMEOUTS.medium });
+      await expect.soft(this.loc(L.datasetByName(this.updatedDatasetName)).first()).toBeVisible({ timeout: TIMEOUTS.medium });
     });
   }
 
@@ -220,4 +233,17 @@ export class DatasetPage extends BasePage {
       await expect.soft(this.loc(L.datasetNameError)).toBeVisible({ timeout: TIMEOUTS.medium });
     });
   }
+
+  async copyDataset(): Promise<void> {
+    await test.step('Copy dataset', async () => {
+      await this.loc(L.datasetMenuByName(this.datasetName)).click();
+      await this.page.waitForTimeout(2000);
+      await this.loc(L.datasetCopyOption).click();
+      await this.page.waitForTimeout(2000);
+      await this.loc(L.datasetCopyConfirmBtn).click();
+      await this.page.waitForTimeout(3000);
+    });
+  }
 }
+
+  

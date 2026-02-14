@@ -29,6 +29,11 @@ export const DatasetLocators = {
   datasetCancelBtnModal: `//button[normalize-space()='Cancel']`,
   datasetCloseModalBtn: `//button[@aria-label='Close']`,
 
+
+  // ============== DATASET COPY MODAL LOCATORS ==============
+  datasetCopyOption: `//div[normalize-space()='Copy Dataset']`,
+  datasetCopyConfirmBtn: `//button[normalize-space()='Copy']`,
+
   // ============== VALIDATION ERROR LOCATORS ⚠️ PENDING ==============
   datasetNameError: `//*[contains(text(),'required') or contains(text(),'Required') or contains(text(),'name')]`,
 
@@ -41,10 +46,11 @@ export const DatasetLocators = {
   datasetLastCell: `(//div[@class='dsg-cell'])[last()]`,
   datasetCellInput: `//input[@class='dsg-input']`,
 
-  // ============== DATASET MENU OPTIONS ⚠️ PENDING ==============
+  // ============== DATASET MENU OPTIONS ==============
   datasetMenuBtn: `//button[@aria-label='Open column options']`,
-  datasetEditOption: `//div[normalize-space()='Edit Details']`,
-  datasetDeleteOption: `//div[normalize-space()='Delete Dataset']`,
+  datasetDetailMenuBtn: `//button[@aria-haspopup='true'][.//*[contains(@class,'octicon-kebab-horizontal')]]`,
+  datasetEditOption: `//div[normalize-space()='Edit Details' and not(.//div)]`,
+  datasetDeleteOption: `//div[normalize-space()='Delete Dataset' and not(.//div)]`,
 
   // ============== DELETE CONFIRMATION DIALOG ⚠️ PENDING ==============
   datasetDeleteConfirmBtn: `//button[normalize-space()='Delete' or normalize-space()='Confirm' or contains(@class,'danger')]`,
@@ -52,9 +58,10 @@ export const DatasetLocators = {
   // ============== DATASET DETAIL PAGE ==============
   datasetSaveBtn: C.saveNormalizedButton,
   datasetTitleTextarea: `//textarea[@name='title']`,
-  datasetBackBtn: `//span[text()='Datasets']`,
+  datasetDetailName: `//div[contains(@class,'hover:cursor-pointer')]//h5`,
+  datasetBackBtn: `//button[.//*[contains(@class,'octicon-arrow-left')]]`,
 
   // ============== DYNAMIC LOCATORS ==============
   datasetByName: (datasetName: string) => `//*[normalize-space(text())='${datasetName}'] | //a[normalize-space(text())='${datasetName}']`,
-  datasetMenuByName: (datasetName: string) => `//a[normalize-space(text())='${datasetName}']//ancestor::tr//button[@aria-label='more']`,
+  datasetMenuByName: (datasetName: string) => `//*[normalize-space(text())='${datasetName}']/ancestor::div[contains(@class,'justify-between')]//button[@aria-haspopup='true']`,
 } as const;

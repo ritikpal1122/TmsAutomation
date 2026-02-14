@@ -45,10 +45,10 @@ const AUTH_FILE = '.auth/user.json';
 // ──────────────────────────────────────────────────────────────
 // Worker count: remote grid is limited by LT plan concurrency
 // ──────────────────────────────────────────────────────────────
-function getWorkerCount(): number {
+function getWorkerCount(): number | undefined {
   if (isRemote) return REMOTE_WORKERS;
   if (process.env.CI) return CI_CONFIG.workers;
-  return 10;
+  return undefined; // uses --workers CLI flag or Playwright default
 }
 
 export default defineConfig({
