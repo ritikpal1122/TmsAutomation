@@ -1,7 +1,7 @@
 import { test, expect } from '../../src/fixtures/tms.fixture.js';
 
 test.describe('Verify Test Case Selection', {
-  tag: ['@regression'],
+  tag: ['@regression', '@folder'],
   annotation: [
     { type: 'feature', description: 'Folder Management' },
     { type: 'severity', description: 'normal' },
@@ -12,27 +12,37 @@ test.describe('Verify Test Case Selection', {
     page,
     testCasePage,
   }) => {
-    // Step 2: Create 3 test cases
+    // Create 3 test cases with waits between them
     const tc1 = `AutoTC_Selection_1_${Date.now()}`;
-    const tc2 = `AutoTC_Selection_2_${Date.now()}`;
-    const tc3 = `AutoTC_Selection_3_${Date.now()}`;
     await testCasePage.createTestCase(tc1);
+    await page.waitForTimeout(500);
+    const tc2 = `AutoTC_Selection_2_${Date.now()}`;
     await testCasePage.createTestCase(tc2);
+    await page.waitForTimeout(500);
+    const tc3 = `AutoTC_Selection_3_${Date.now()}`;
     await testCasePage.createTestCase(tc3);
 
-    // Step 3: Select all test cases using select all checkbox
+    // Wait for the list view to fully render after test case creation
+    await page.waitForTimeout(2000);
+
+    // Select all test cases using select all checkbox
+    await page.locator('#all').waitFor({ state: 'attached', timeout: 15000 });
     await page.locator('#all').click();
 
-    // Step 4: Verify selection banner shows count
-    await expect.soft(page.locator(`//p[contains(text(),'Test Cases are selected')]`)).toBeVisible();
+    // Verify selection banner shows count
+    await expect.soft(page.locator(`//p[contains(.,'Test Cases are selected')]`)).toBeVisible({ timeout: 15000 });
 
-    // Step 5: Clear selection
-    await page.locator(`//span[text()='Clear Selection']`).click();
+    // Clear selection
+    await page.locator(`//button[.//*[normalize-space()='Clear Selection']]`).click();
+    await page.waitForTimeout(500);
 
-    // Step 6: Select single test case
+    // Select single test case
     await page.locator(`(//input[@type='checkbox'])[2]`).click();
 
-    // Step 7: Verify selection
-    await expect.soft(page.locator(`//p[contains(text(),'Test Cases are selected')]`)).toBeVisible();
+    // Verify selection
+    await expect.soft(page.locator(`//p[contains(.,'Test Cases are selected')]`)).toBeVisible({ timeout: 15000 });
+
+    // Navigate away to ensure clean page state before fixture teardown
+    await page.goto('about:blank', { waitUntil: 'commit' });
   });
 });

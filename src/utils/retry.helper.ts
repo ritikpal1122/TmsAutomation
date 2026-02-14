@@ -15,7 +15,7 @@ export async function retryAction(
     } catch (error) {
       console.log(`[retryAction] ${label} attempt ${attempt}/${retries} failed: ${(error as Error).message}`);
       if (attempt === retries) throw error;
-      await page.waitForTimeout(delayMs);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
     }
   }
 }

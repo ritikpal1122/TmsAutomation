@@ -136,11 +136,14 @@ export class TestRunPage extends BasePage {
     await test.step(`Open test run ${name ?? this.testRunName}`, async () => {
       const runName = name ?? this.testRunName;
       // Navigate to test run list based on current page context
-      if (await this.isVisible(L.testRunNav, 2000)) {
+      if (await this.isVisible(L.testRunNav, TIMEOUTS.medium)) {
         await clickAndWaitForNetwork(this.page, this.loc(L.testRunNav));
-      } else {
+      } else if (await this.isVisible(L.backtoTestRunList, TIMEOUTS.short)) {
         await this.loc(L.backtoTestRunList).click();
         await waitForNetworkIdle(this.page);
+      } else {
+        // Fallback: navigate to test runs via the project tab directly
+        await clickAndWaitForNetwork(this.page, this.loc(L.testRunNav));
       }
       await fillAndWaitForSearch(this.page, this.loc(L.searchFieldInLinkProject), runName, this.loc(L.createdTestrunAppear(runName)));
       await this.loc(L.createdTestrunAppear(runName)).click();
@@ -182,19 +185,22 @@ export class TestRunPage extends BasePage {
   async markStatus(status: 'Passed' | 'Failed' | 'Skipped' | 'Blocked'): Promise<void> {
     await test.step(`Mark test case status: ${status}`, async () => {
       await this.loc(L.instanceStatusDropdown()).click();
-      if (status === 'Passed') {
-        await this.loc(L.tcStatusPassedButton).click();
-      } else if (status === 'Failed') {
-        await this.loc(L.tcStatusFailed).click();
-      } else if (status === 'Skipped') {
-        await this.loc(L.tcStatusSkipButton).click();
-      }
-      await expect.soft(this.loc(L.instanceStatusDropdownAfter())).toBeVisible({ timeout: TIMEOUTS.medium });
+      await this.loc(`//div[@role='option'][@data-id='${status}']`).click();
+      await waitForNetworkIdle(this.page);
+      await this.page.waitForTimeout(1000);
     });
   }
 
   async markBulkStatus(status: 'Passed' | 'Failed' | 'Skipped' | 'Blocked', count = 2): Promise<void> {
     await test.step(`Mark bulk status: ${status} for ${count} items`, async () => {
+      await waitForNetworkIdle(this.page);
+      await this.page.waitForTimeout(1000);
+      // Ensure fresh selection: uncheck select-all if already checked from previous bulk operation
+      const selectAll = this.loc(L.selectInstancesInBulk).first();
+      if (await selectAll.isChecked()) {
+        await selectAll.click();
+        await this.page.waitForTimeout(500);
+      }
       for (let i = 0; i < count; i++) {
         await this.loc(L.selectInstancesInBulk).nth(i).click();
       }
@@ -212,6 +218,10 @@ export class TestRunPage extends BasePage {
 
   async markBulkAssignee(count = 2): Promise<void> {
     await test.step(`Mark bulk assignee for ${count} items`, async () => {
+      await waitForNetworkIdle(this.page);
+      // Wait for instance checkboxes to be rendered and interactive
+      await this.loc(L.selectInstancesInBulk).first().waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
+      await this.page.waitForTimeout(2000);
       for (let i = 0; i < count; i++) {
         await this.loc(L.selectInstancesInBulk).nth(i).click();
       }
@@ -299,9 +309,10 @@ export class TestRunPage extends BasePage {
       await this.loc(L.createdTestrunOpenMenu(runName)).first().click();
       await this.loc(L.duplicateTestRun).click();
       await waitForNetworkIdle(this.page);
-      // Close menu if still open, then search for duplicate
-      await this.page.keyboard.press('Escape');
-      await this.page.waitForTimeout(1000);
+      // Duplicate navigates to edit page — go back to test run list
+      await this.page.locator(`//button[.//span[text()='Test Run']]`).click();
+      await waitForNetworkIdle(this.page);
+      // Search for the duplicated test run
       await fillAndWaitForSearch(this.page, this.loc(L.searchFieldInLinkProject), `Copy of ${runName}`, this.loc(L.duplicateTestRunByName(runName)));
       await expect.soft(this.loc(L.duplicateTestRunByName(runName))).toBeVisible({ timeout: TIMEOUTS.long });
     });

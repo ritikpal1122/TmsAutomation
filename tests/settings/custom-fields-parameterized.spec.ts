@@ -5,7 +5,7 @@ import { CUSTOM_FIELD_TYPES } from '../../src/data/custom-fields.data.js';
 import { randomString } from '../../src/utils/random.helper.js';
 
 test.describe('Custom Fields - Parameterized', {
-  tag: ['@regression'],
+  tag: ['@regression' , '@settings'],
   annotation: [
     { type: 'feature', description: 'Settings' },
     { type: 'severity', description: 'normal' },

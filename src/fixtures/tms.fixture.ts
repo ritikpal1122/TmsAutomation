@@ -91,18 +91,24 @@ export const test = base.extend<TmsFixtures>({
     await use(remotePage);
 
     // Mark the LT session with pass/fail status so the dashboard reflects results
-    const status = testInfo.status === 'passed' ? 'passed' : 'failed';
-    const remark = testInfo.status === 'passed'
-      ? `Test passed in ${testInfo.duration}ms`
-      : `Test failed: ${testInfo.error?.message?.slice(0, 200) ?? 'unknown error'}`;
+    if (!remotePage.isClosed()) {
+      try {
+        const status = testInfo.status === 'passed' ? 'passed' : 'failed';
+        const remark = testInfo.status === 'passed'
+          ? `Test passed in ${testInfo.duration}ms`
+          : `Test failed: ${testInfo.error?.message?.slice(0, 200) ?? 'unknown error'}`;
 
-    await remotePage.evaluate(
-      () => {},
-      `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status, remark } })}`,
-    );
+        await remotePage.evaluate(
+          () => {},
+          `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status, remark } })}`,
+        );
+      } catch {
+        // Page closed during teardown (timeout expiry) — status update skipped
+      }
+    }
 
-    await context.close();
-    await browser.close();
+    await context.close().catch(() => {});
+    await browser.close().catch(() => {});
   },
   nav: async ({ page }, use) => {
     await use(new NavigationPage(page));
@@ -178,27 +184,48 @@ export const test = base.extend<TmsFixtures>({
     await use(setup);
     await cleanup();
   },
-  projectOnly: async ({ projectPage }, use) => {
+  projectOnly: async ({ page, projectPage }, use) => {
     await projectPage.createProjectWithTagDescription();
     await projectPage.openProject();
     await use();
-    await projectPage.deleteProject();
+    if (!page.isClosed()) {
+      try {
+        await page.goto('about:blank', { waitUntil: 'commit' });
+        await projectPage.deleteProject();
+      } catch {
+        // Page closed during teardown (timeout expiry) — cleanup skipped
+      }
+    }
   },
-  projectWithTestCase: async ({ projectPage, testCasePage }, use) => {
+  projectWithTestCase: async ({ page, projectPage, testCasePage }, use) => {
     await projectPage.createProjectWithTagDescription();
     await projectPage.openProject();
     await testCasePage.createTestCase();
     await use();
-    await projectPage.deleteProject();
+    if (!page.isClosed()) {
+      try {
+        await page.goto('about:blank', { waitUntil: 'commit' });
+        await projectPage.deleteProject();
+      } catch {
+        // Page closed during teardown (timeout expiry) — cleanup skipped
+      }
+    }
   },
-  projectWithTestCaseInFolder: async ({ projectPage, testCasePage, folderPage }, use) => {
+  projectWithTestCaseInFolder: async ({ page, projectPage, testCasePage, folderPage }, use) => {
     await projectPage.createProjectWithTagDescription();
     await projectPage.openProject();
     await folderPage.createFolder();
     await folderPage.openFolder(folderPage.folderName);
     await testCasePage.createTestCase();
     await use();
-    await projectPage.deleteProject();
+    if (!page.isClosed()) {
+      try {
+        await page.goto('about:blank', { waitUntil: 'commit' });
+        await projectPage.deleteProject();
+      } catch {
+        // Page closed during teardown (timeout expiry) — cleanup skipped
+      }
+    }
   },
 });
 

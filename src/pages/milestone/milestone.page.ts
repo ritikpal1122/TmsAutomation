@@ -200,8 +200,14 @@ export class MilestonePage extends BasePage {
 
   async verifyProgressAfterStatusUpdate(expectedPercentage: string): Promise<void> {
     await test.step(`Verify progress after status update is ${expectedPercentage}%`, async () => {
-      await this.page.reload();
-      await this.page.waitForTimeout(3000);
+      // Poll with multiple reloads — backend aggregates progress asynchronously
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await this.page.reload({ waitUntil: 'domcontentloaded' });
+        await this.page.waitForTimeout(3000);
+        if (await this.isVisible(milestoneProgressWithPercentage(expectedPercentage), TIMEOUTS.short)) {
+          break;
+        }
+      }
       await expect.soft(this.loc(milestoneProgressWithPercentage(expectedPercentage))).toBeVisible({ timeout: TIMEOUTS.long });
     });
   }
@@ -237,15 +243,16 @@ export class MilestonePage extends BasePage {
   }
 
   // Passed/Failed Count
-  async verifyPassedAndFailedCount(): Promise<void> {
+  async verifyPassedAndFailedCount(expectFailed = true): Promise<void> {
     await test.step('Verify passed and failed count', async () => {
-      if (await this.isVisible(L.milestoneProgressDetailsBtn, TIMEOUTS.medium)) {
+      if (await this.isVisible(L.milestoneProgressDetailsBtn, TIMEOUTS.short)) {
         await this.loc(L.milestoneProgressDetailsBtn).click();
-        await this.loc(L.milestoneProgressDetailsBtn).hover();
         await this.page.waitForTimeout(2000);
       }
       await expect.soft(this.loc(L.progressPopupPassedCount)).toBeVisible({ timeout: TIMEOUTS.medium });
-      await expect.soft(this.loc(L.progressPopupFailedCount)).toBeVisible({ timeout: TIMEOUTS.medium });
+      if (expectFailed) {
+        await expect.soft(this.loc(L.progressPopupFailedCount)).toBeVisible({ timeout: TIMEOUTS.medium });
+      }
     });
   }
 
@@ -310,7 +317,6 @@ export class MilestonePage extends BasePage {
   // Mark as Complete
   async markMilestoneAsCompleted(): Promise<void> {
     await test.step('Mark milestone as completed', async () => {
-      await this.loc(L.milestoneOpenMenu).click();
       await this.loc(L.milestoneMarkCompletedBtn).click();
       await this.page.waitForTimeout(3000);
     });

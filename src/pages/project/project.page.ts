@@ -31,7 +31,9 @@ export class ProjectPage extends BasePage {
         await this.loc(L.projectDescription).fill(randomString(RANDOM_LENGTH.standard));
       }
       if (tag) {
-        await this.loc(L.projectTag).fill(randomString(RANDOM_LENGTH.standard));
+        const tagInput = this.loc(L.projectTag);
+        await tagInput.click();
+        await tagInput.fill(randomString(RANDOM_LENGTH.standard));
         await this.page.keyboard.press('Enter');
       }
       await this.loc(L.projectCreate).click();
@@ -43,7 +45,10 @@ export class ProjectPage extends BasePage {
     await test.step(`Open project ${name ?? this.projectName}`, async () => {
       const projectName = name ?? this.projectName;
       // Navigate to projects list
-      await this.page.goto(EnvConfig.tmsBaseUrl);
+      await this.page.goto(EnvConfig.tmsBaseUrl, { waitUntil: 'domcontentloaded' });
+
+      // Dismiss any overlay/modal that might be present
+      await this.page.keyboard.press('Escape');
 
       // Wait for loading to complete
       await this.loc(L.searchProject).waitFor({ state: 'visible', timeout: TIMEOUTS.long });
@@ -56,6 +61,10 @@ export class ProjectPage extends BasePage {
 
       // Retry search up to 3 times (newly created projects may take time to appear)
       await retryAction(this.page, async () => {
+        // Dismiss any overlay before each attempt
+        await this.page.keyboard.press('Escape');
+        await this.page.waitForTimeout(500);
+
         const el = this.loc(L.searchProject);
         await el.click();
         await el.clear();
@@ -87,25 +96,51 @@ export class ProjectPage extends BasePage {
   async deleteProject(name?: string): Promise<void> {
     await test.step(`Delete project ${name ?? this.projectName}`, async () => {
       const projectName = name ?? this.projectName;
-      // Navigate to projects list if not already there
-      if (!(await this.isVisible(L.searchProject, TIMEOUTS.short))) {
-        await this.page.goto(EnvConfig.tmsBaseUrl);
-        await waitForNetworkIdle(this.page);
+      // Navigate to projects list
+      await this.page.goto(EnvConfig.tmsBaseUrl, { waitUntil: 'domcontentloaded' });
+      await this.page.keyboard.press('Escape');
+      await this.loc(L.searchProject).waitFor({ state: 'visible', timeout: TIMEOUTS.long });
+      try {
+        await this.loc(L.loadingProjects).waitFor({ state: 'hidden', timeout: TIMEOUTS.extraLong });
+      } catch {
+        // Loading indicator might not appear or already gone
       }
+      await waitForNetworkIdle(this.page);
+
       const searchInput = this.loc(L.searchProject);
       await searchInput.click();
       await searchInput.clear();
       await searchInput.pressSequentially(projectName, { delay: 50 });
       await waitForNetworkIdle(this.page);
       if (await this.isVisible(L.createdProject(projectName))) {
-        await this.loc(L.projectTripleDotButton(projectName)).first().click();
+        // Dismiss any stale tooltips/menus before opening the options menu
+        await this.page.keyboard.press('Escape');
+        await this.page.waitForTimeout(500);
+
+        // Retry opening the triple-dot menu up to 3 times
+        let menuOpened = false;
+        for (let attempt = 0; attempt < 3 && !menuOpened; attempt++) {
+          if (attempt > 0) {
+            await this.page.keyboard.press('Escape');
+            await this.page.waitForTimeout(500);
+          }
+          await this.loc(L.projectTripleDotButton(projectName)).first().click({ force: true });
+          try {
+            await this.loc(L.projectDeleteButton).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
+            menuOpened = true;
+          } catch {
+            // Menu didn't open, retry
+          }
+        }
         await this.loc(L.projectDeleteButton).click();
         const confirmInput = this.loc(L.projectDeleteConfirmInput);
+        await confirmInput.waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
         await confirmInput.click();
         await confirmInput.fill('');
         await confirmInput.pressSequentially('DELETE');
-        await this.page.waitForTimeout(1000);
+        await this.loc(L.projectDeleteConfirmation).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
         await this.loc(L.projectDeleteConfirmation).click();
+        await this.page.waitForTimeout(2000);
       }
     });
   }

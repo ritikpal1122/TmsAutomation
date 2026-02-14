@@ -68,7 +68,7 @@ export const TestCaseLocators = {
   scenarioField: `(//div[@class='view-lines monaco-mouse-cursor-text'])[last()]`,
   addScenarioCta: `(//span[text()='Add scenario'])[2]`,
   addScenarioButton: `(//span[text()='Add scenario'])[1]`, // Need to update this 
-  scenarioCount: `//span[@data-component='trailingVisual']//span[@aria-hidden='true']`,
+  scenarioCount: `(//span[@data-component='trailingVisual']//span[@aria-hidden='true'])[2]`, // Need to update this 
   scenarioItems: `//span[@aria-label='Delete Scenario']`,
   scenarioDuplicate: `//*[name()='svg' and contains(@class, 'octicon-duplicate')]`,
   scenarioDelete: `//span[@aria-label='Delete Scenario']`,

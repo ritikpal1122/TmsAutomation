@@ -55,9 +55,9 @@ export const MilestoneLocators = {
 
   // ============== MILESTONE MENU OPTIONS ==============
   milestoneOpenMenu: C.openMenuButton,
-  milestoneEditMenu: `//ul[@role='menu']//div[text()='Edit']`,
-  milestoneDeleteMenu: `//ul[@role='menu']//div[text()='Delete']`,
-  milestoneMarkCompleteMenu: `//div[@role='menuitem'][contains(.,'Mark as Complete')]`,
+  milestoneEditMenu: `//ul[@role='menu']//li[@role='menuitem'][contains(.,'Edit')]`,
+  milestoneDeleteMenu: `//ul[@role='menu']//li[@role='menuitem'][contains(.,'Delete')]`,
+  milestoneMarkCompleteMenu: `//ul[@role='menu']//li[@role='menuitem'][contains(.,'Mark as Complete')]`,
 
   // ============== BREADCRUMB ==============
   breadcrumbTestManager: `//button[.//span[text()='Test Manager']]`,
@@ -67,7 +67,7 @@ export const MilestoneLocators = {
   milestoneProgressBar: `//span[@role='progressbar'][@aria-label='Milestone progress']`,
   milestoneProgressPercentage: `//span[contains(.,'% Complete')]`,
   milestoneProgressDetailsBtn: `//span[@aria-label='Milestone progress']`,
-  milestoneMarkCompletedBtn: `//ul[@role='menu']//div[contains(., 'Mark as Complete')]`,
+  milestoneMarkCompletedBtn: `//button[contains(.,'Mark as Completed')]`,
   milestoneTestRunsAssociated: `//span[contains(text(),'Test Runs Associated')]`,
   milestonePassedRatio: `//span[contains(text(),'Passed') and contains(text(),'/')]`,
   milestoneDetailDescription: `//div[contains(@class,'description') or contains(@class,'text')]//div[string-length(text()) > 10]`,
@@ -126,7 +126,7 @@ export const milestoneLink = (milestoneName: string) =>
  * Returns locator for selecting a milestone from dropdown
  */
 export const milestoneOption = (milestoneName: string) =>
-  `//li[@title='${milestoneName}'] | //span[contains(text(),'${milestoneName}')]`;
+  `//li[@title='${milestoneName}']`;
 
 /**
  * Returns locator for a tag in the milestone
@@ -144,7 +144,7 @@ export const milestoneProgressWithPercentage = (percentage: string) =>
  * Returns locator for breadcrumb milestone name
  */
 export const breadcrumbMilestoneName = (milestoneName: string) =>
-  `//span[text()='${milestoneName}']`;
+  `(//span[text()='${milestoneName}'])[1]`;
 
 /**
  * Returns locator for test runs associated count

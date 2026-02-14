@@ -1,7 +1,7 @@
 import { test, expect } from '../../src/fixtures/tms.fixture.js';
 
 test.describe('Folder CRUD', {
-  tag: ['@smoke', '@regression'],
+  tag: ['@smoke', '@regression', '@folder'],
   annotation: [
     { type: 'feature', description: 'Folder Management' },
     { type: 'severity', description: 'normal' },

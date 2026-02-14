@@ -24,6 +24,17 @@ async function globalSetup() {
     fs.mkdirSync(authDir, { recursive: true });
   }
 
+  // Skip login if a recent auth file already exists (avoids account lockout issues)
+  if (fs.existsSync(AUTH_FILE)) {
+    const stat = fs.statSync(AUTH_FILE);
+    const ageMs = Date.now() - stat.mtimeMs;
+    const ONE_HOUR = 60 * 60 * 1000;
+    if (ageMs < ONE_HOUR) {
+      console.log(`Auth file is recent (${Math.round(ageMs / 1000)}s old), skipping login`);
+      return;
+    }
+  }
+
   const ctx = await request.newContext({
     baseURL: EnvConfig.baseUrl,
   });

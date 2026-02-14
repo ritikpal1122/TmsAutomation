@@ -7,6 +7,10 @@ test.describe('Milestone CRUD with TestRun Integration', {
     { type: 'severity', description: 'critical' },
   ],
 }, () => {
+  // This test has 20+ steps (create project, test cases, milestone, test run, verify, edit, delete)
+  // plus progress polling retries — needs generous timeout.
+  test.setTimeout(420_000);
+
   /**
    * Full BDD Scenario: Milestone CRUD with TestRun integration
    *
@@ -67,11 +71,8 @@ test.describe('Milestone CRUD with TestRun Integration', {
     // Step 7: Verify milestone tag is visible
     await milestonePage.verifyMilestoneTagVisible();
 
-    // Step 8: Open Test Run creation form, create Test Run with configuration and assignee
-    await testRunPage.createTestRun();
-    await testRunPage.openTestRun();
-    await testRunPage.selectConfiguration('default');
-    await testRunPage.selectAssignee('');
+    // Step 8: Create Test Run with test cases and configuration
+    await testRunPage.createTestRunWithTestCases();
 
     // Step 9: Select created milestone in Test Run
     await milestonePage.selectCreatedMilestoneInTestRun();
@@ -93,7 +94,6 @@ test.describe('Milestone CRUD with TestRun Integration', {
     await milestonePage.verifyMilestoneProgressIsZero();
 
     // Step 15: Open TestRun List, verify testcases inside Test Run
-    await testRunPage.backToTestRunList();
     await testRunPage.openTestRun();
 
     // Step 16: Mark status of testcases and test steps

@@ -3,7 +3,7 @@ import { EnvConfig } from '../../src/config/env.config.js';
 import { ROUTES } from '../../src/config/constants.js';
 
 test.describe('System Fields', {
-  tag: ['@regression'],
+  tag: ['@regression' , '@settings'],
   annotation: [
     { type: 'feature', description: 'Settings' },
     { type: 'severity', description: 'normal' },
@@ -17,7 +17,7 @@ test.describe('System Fields', {
     await settingsPage.addValueInPriority();
     await settingsPage.addValueStatus();
     await settingsPage.addValueType(projectPage.projectName);
-    // Verify in test case
+    // Verify in test case  
     await projectPage.openProject();
     await testCasePage.createTestCase();
     await testCasePage.openTestCase();

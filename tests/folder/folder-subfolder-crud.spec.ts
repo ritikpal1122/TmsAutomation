@@ -1,7 +1,7 @@
 import { test, expect } from '../../src/fixtures/tms.fixture.js';
 
 test.describe('Folder/Sub-Folder CRUD with Test Cases', {
-  tag: ['@regression'],
+  tag: ['@regression', '@folder'],
   annotation: [
     { type: 'feature', description: 'Folder Management' },
     { type: 'severity', description: 'critical' },
