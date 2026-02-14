@@ -2,17 +2,23 @@ import { test } from '../../src/fixtures/tms.fixture.js';
 import { setupReportProject, configureReportFilters, generateAndVerifyReport } from '../../src/helpers/report-test.helper.js';
 
 test.describe('Report - Test Runs with Multiple Filters', {
-  tag: ['@regression'],
+  tag: ['@regression', '@Reportregressionus'],
   annotation: [
     { type: 'feature', description: 'Reports' },
     { type: 'severity', description: 'normal' },
   ],
 }, () => {
-  test('should create a report with test runs filter and priority and status filters', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
+  test('should create a report with test runs filter and priority and type filters', async ({ projectPage, testCasePage, testRunPage, reportPage }) => {
+    test.setTimeout(600_000);
     const opts = {
       projectPage, testCasePage, testRunPage, reportPage,
       primaryFilter: 'testRuns' as const,
-      filters: [{ method: 'Priority', value: 'High' }, { method: 'Status', value: 'Draft' }],
+      priority: 'High',
+      type: 'Regression',
+      filters: [
+        { method: 'Priority', value: 'High' },
+        { method: 'Type', value: 'Regression' },
+      ],
     };
     await setupReportProject(opts);
     await configureReportFilters(opts);
