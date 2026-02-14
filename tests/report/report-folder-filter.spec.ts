@@ -14,7 +14,7 @@ test.describe('Report - Folder Filter', {
       projectPage, testCasePage, testRunPage, reportPage, folderPage,
       folder: true,
       dateRangePreset: 'All Time',
-      filters: [{ method: 'Folder' as const, value: USE_FOLDER_NAME }],
+      filters: [{ method: 'Folder', value: USE_FOLDER_NAME }],
     };
     await setupReportProject(opts);
     await configureReportFilters(opts);

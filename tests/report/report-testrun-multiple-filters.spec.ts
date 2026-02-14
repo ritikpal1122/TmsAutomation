@@ -16,8 +16,8 @@ test.describe('Report - Test Runs with Multiple Filters', {
       priority: 'High',
       type: 'Regression',
       filters: [
-        { method: 'Priority' as const, value: 'High' },
-        { method: 'Type' as const, value: 'Regression' },
+        { method: 'Priority', value: 'High' },
+        { method: 'Type', value: 'Regression' },
       ],
     };
     await setupReportProject(opts);

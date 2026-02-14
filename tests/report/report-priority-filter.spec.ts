@@ -14,7 +14,7 @@ test.describe('Report - Priority Filter', {
       projectPage, testCasePage, testRunPage, reportPage,
       priority: 'High',
       dateRangePreset: 'All Time',
-      filters: [{ method: 'Priority' as const, value: 'High' }],
+      filters: [{ method: 'Priority', value: 'High' }],
     };
     await setupReportProject(opts);
     await configureReportFilters(opts);

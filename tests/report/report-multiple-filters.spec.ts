@@ -14,7 +14,7 @@ test.describe('Report - Multiple Filters', {
       projectPage, testCasePage, testRunPage, reportPage,
       primaryFilter: 'testRuns' as const,
       priority: 'Medium',
-      filters: [{ method: 'Priority' as const, value: 'Medium' }],
+      filters: [{ method: 'Priority', value: 'Medium' }],
     };
     await setupReportProject(opts);
     await configureReportFilters(opts);

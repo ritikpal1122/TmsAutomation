@@ -16,9 +16,9 @@ test.describe('Report - Priority, Status, and Automation Status Filters', {
       setStatusLive: true,
       dateRangePreset: 'All Time',
       filters: [
-        { method: 'Priority' as const, value: 'Medium' },
-        { method: 'Status' as const, value: 'Live' },
-        { method: 'AutomationStatus' as const, value: 'Not Automated' },
+        { method: 'Priority', value: 'Medium' },
+        { method: 'Status', value: 'Live' },
+        { method: 'AutomationStatus', value: 'Not Automated' },
       ],
     };
     await setupReportProject(opts);

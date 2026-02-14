@@ -14,7 +14,7 @@ test.describe('Report - Status Filter', {
       projectPage, testCasePage, testRunPage, reportPage,
       setStatusLive: true,
       dateRangePreset: 'All Time',
-      filters: [{ method: 'Status' as const, value: 'Live' }],
+      filters: [{ method: 'Status', value: 'Live' }],
     };
     await setupReportProject(opts);
     await configureReportFilters(opts);

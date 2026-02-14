@@ -8,7 +8,7 @@ import { createProjectWithTestCase } from './common-setup.helper.js';
 /** Supported filter method names — must match ReportPage select/set method pairs */
 export type FilterMethod = 'Priority' | 'Status' | 'Folder' | 'AutomationStatus' | 'Type' | 'Tags' | 'CreatedBy' | 'LinkedIssues';
 
-export type ReportFilter = { method: FilterMethod; value: string };
+export type ReportFilter = { method: string; value: string };
 
 type FilterAction = {
   select: (rp: ReportPage) => Promise<void>;
@@ -138,7 +138,8 @@ export async function configureReportFilters(opts: ReportSetupOptions): Promise<
   if (filters.length > 0) {
     await reportPage.enableTestCasesFilter();
     for (const f of filters) {
-      const action = FILTER_ACTIONS[f.method];
+      const action = FILTER_ACTIONS[f.method as FilterMethod];
+      if (!action) throw new Error(`Unknown filter method: "${f.method}". Expected one of: ${Object.keys(FILTER_ACTIONS).join(', ')}`);
       const value = f.value === USE_FOLDER_NAME && folderPage ? folderPage.folderName : f.value;
       await action.select(reportPage);
       await action.setValue(reportPage, value);

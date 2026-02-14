@@ -13,7 +13,7 @@ test.describe('Report - Automation Status Filter', {
     const opts = {
       projectPage, testCasePage, testRunPage, reportPage,
       dateRangePreset: 'All Time',
-      filters: [{ method: 'AutomationStatus' as const, value: 'Not Automated' }],
+      filters: [{ method: 'AutomationStatus', value: 'Not Automated' }],
     };
     await setupReportProject(opts);
     await configureReportFilters(opts);

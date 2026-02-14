@@ -16,8 +16,8 @@ test.describe('Report - Priority and Status Filters', {
       setStatusLive: true,
       dateRangePreset: 'All Time',
       filters: [
-        { method: 'Priority' as const, value: 'High' },
-        { method: 'Status' as const, value: 'Live' },
+        { method: 'Priority', value: 'High' },
+        { method: 'Status', value: 'Live' },
       ],
     };
     await setupReportProject(opts);

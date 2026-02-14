@@ -14,7 +14,7 @@ test.describe('Report - Type Filter', {
       projectPage, testCasePage, testRunPage, reportPage,
       type: 'Functional',
       dateRangePreset: 'All Time',
-      filters: [{ method: 'Type' as const, value: 'Functional' }],
+      filters: [{ method: 'Type', value: 'Functional' }],
     };
     await setupReportProject(opts);
     await configureReportFilters(opts);
