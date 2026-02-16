@@ -56,7 +56,7 @@ export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? CI_CONFIG.retries : 0,
+  retries: 0, // controlled via --retries CLI flag
   workers: getWorkerCount(),
   reporter: [
     ['html', { open: 'never' }],
