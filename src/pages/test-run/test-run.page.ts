@@ -488,7 +488,16 @@ export class TestRunPage extends BasePage {
 
   async verifyExecutionHistory(statuses: string[]): Promise<void> {
     await test.step('Verify execution history statuses', async () => {
+      // Navigate into the test case detail view (View Execution Log is only available there)
+      await this.loc(L.firstInstanceTestCaseLink).first().waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
+      await this.loc(L.firstInstanceTestCaseLink).first().click();
+      await waitForNetworkIdle(this.page);
+
+      // Open the audit logs panel
+      await this.loc(L.executionHistoryTab).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
       await this.loc(L.executionHistoryTab).click();
+
+      // Verify each status appears in the audit log
       await this.loc(L.executionHistoryStatus(statuses[0])).first().waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
       for (const status of statuses) {
         await expect.soft(this.loc(L.executionHistoryStatus(status))).toBeVisible({ timeout: TIMEOUTS.medium });

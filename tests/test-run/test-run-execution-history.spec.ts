@@ -3,7 +3,7 @@ import { randomString } from '../../src/utils/random.helper.js';
 import { RANDOM_LENGTH } from '../../src/config/constants.js';
 
 test.describe('Test Run Execution History', {
-  tag: ['@regression', '@test-run'],
+  tag: ['@regression', '@test-run-execution-history'],
   annotation: [
     { type: 'feature', description: 'Test Run Management' },
     { type: 'severity', description: 'normal' },
@@ -15,6 +15,7 @@ test.describe('Test Run Execution History', {
     testCasePage,
     testRunPage,
   }) => {
+    test.setTimeout(300_000); // 5 min — project + TC + steps + test run + mark status + execution history
     // Create a test case with steps
     const tcTitle = testCasePage.testCaseTitle;
     const stepDesc = `Step_${randomString(RANDOM_LENGTH.standard)}`;

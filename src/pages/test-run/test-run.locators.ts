@@ -93,11 +93,12 @@ export const TestRunLocators = {
   addVariableUrl: `//input[@placeholder='Enter URL']`,
   addVariableSave: `//button[normalize-space()='Save']`,
   addVariableCta: `//span[text()='Add Variable']`,
-  saveTestRun: `//span[text()='Save Test Run']//ancestor::button`,
+  saveTestRun: `//span[text()='Save Test Run']`,
   noConfigurationAddedBtn: `// span[text()='No Configuration added']`,
   checkBoxConfiguration: `(// input[@id=\"checkbox_new\"])[1]`,
 
-  // Execution history
-  executionHistoryTab: `//span[text()='Execution History']`,
+  // Execution history (audit logs panel via "View Execution Log" button in TC detail)
+  executionHistoryTab: `//span[text()='View Execution Log']`,
   executionHistoryStatus: (status: string) => `//span[text()='${status}']`,
+  firstInstanceTestCaseLink: `a[href*="/test-run/"][href*="/test-cases/"]`,
 } as const;
