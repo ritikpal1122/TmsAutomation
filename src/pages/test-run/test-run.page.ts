@@ -4,6 +4,7 @@ import { TestRunLocators as L } from './test-run.locators.js';
 import { TIMEOUTS, RANDOM_LENGTH } from '../../config/constants.js';
 import { randomString } from '../../utils/random.helper.js';
 import { waitForNetworkIdle, clickAndWaitForNetwork, fillAndWaitForSearch } from '../../utils/wait.helper.js';
+import { retryAction } from '../../utils/retry.helper.js';
 
 export class TestRunPage extends BasePage {
   testRunName = `AutoTestRun_${randomString(RANDOM_LENGTH.standard)}`;
@@ -45,25 +46,25 @@ export class TestRunPage extends BasePage {
       await this.loc(L.testRunDescription).fill(randomString(RANDOM_LENGTH.long));
       await this.loc(L.testRunTag).fill(`tag_${randomString(RANDOM_LENGTH.short)}`);
       await this.page.keyboard.press('Enter');
-      // Create test run (opens edit screen with test cases)
+      // Create test run — navigates to edit screen, short wait ensures page starts loading
       await this.loc(L.saveTestRunCta).last().click({ timeout: TIMEOUTS.long });
-      await waitForNetworkIdle(this.page);
+      await waitForNetworkIdle(this.page, TIMEOUTS.short);
       // Wait for test cases to load, then select all
       await this.loc(L.testCaseRowLoaded).first().waitFor({ state: 'visible', timeout: TIMEOUTS.long });
       await this.clickSelectAllCheckbox();
       await this.loc(L.addTcTestRunCta).click();
-      await waitForNetworkIdle(this.page);
-      // Verify missing config/assignee message
+      // Wait for missing config message instead of generic network idle
       await expect.soft(this.loc(L.missingMsgTR)).toBeVisible({ timeout: TIMEOUTS.medium });
       // Add configuration (skip assignee)
       await this.loc(L.addConfigCtaTP).click();
-      await waitForNetworkIdle(this.page);
+      await this.loc(L.selectConfigCheck).first().waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
       await this.loc(L.selectConfigCheck).first().click();
       await this.loc(L.applyConfiguration).click();
-      await waitForNetworkIdle(this.page);
-      // Save test run
+      // Wait for Apply to close instead of generic network idle
+      await this.loc(L.applyConfiguration).waitFor({ state: 'hidden', timeout: TIMEOUTS.medium });
+      // Save test run — navigates to instances page, short wait ensures page starts loading
       await this.loc(L.saveTestRun).click({ timeout: TIMEOUTS.long });
-      await waitForNetworkIdle(this.page);
+      await waitForNetworkIdle(this.page, TIMEOUTS.short);
       // Verify test run appears on instances page
       await expect.soft(this.loc(L.createdTestrunAppearInstancesPage(runName))).toBeVisible({ timeout: TIMEOUTS.long });
     });
@@ -76,30 +77,30 @@ export class TestRunPage extends BasePage {
       await this.loc(L.createTestRunButton).first().click({ timeout: TIMEOUTS.long });
       await this.loc(L.testRunTitle).fill(runName);
       await this.loc(L.testRunDescription).fill(randomString(RANDOM_LENGTH.long));
-      // Create test run (opens edit screen with test cases)
+      // Create test run — navigates to edit screen, short wait ensures page starts loading
       await this.loc(L.saveTestRunCta).last().click({ timeout: TIMEOUTS.long });
-      await waitForNetworkIdle(this.page);
+      await waitForNetworkIdle(this.page, TIMEOUTS.short);
       // Wait for test cases to load, then select all
       await this.loc(L.testCaseRowLoaded).first().waitFor({ state: 'visible', timeout: TIMEOUTS.long });
       await this.clickSelectAllCheckbox();
       await this.loc(L.addTcTestRunCta).click();
-      await waitForNetworkIdle(this.page);
-      // Verify missing config/assignee message
+      // Wait for missing config message instead of generic network idle
       await expect.soft(this.loc(L.missingMsgTR)).toBeVisible({ timeout: TIMEOUTS.medium });
       // Add configuration
       await this.loc(L.addConfigCtaTP).click();
-      await waitForNetworkIdle(this.page);
       await this.loc(L.selectConfigCheck).first().waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
       await this.loc(L.selectConfigCheck).first().click();
       await this.loc(L.applyConfiguration).click();
-      await waitForNetworkIdle(this.page);
+      // Wait for Apply to close instead of generic network idle
+      await this.loc(L.applyConfiguration).waitFor({ state: 'hidden', timeout: TIMEOUTS.medium });
       // Add assignee
       await this.loc(L.selectAssigneeTRPageButton1).click();
       await this.loc(L.selectAssignee).click();
-      await waitForNetworkIdle(this.page);
-      // Save test run
+      // Wait for assignee dropdown to close
+      await this.loc(L.selectAssignee).waitFor({ state: 'hidden', timeout: TIMEOUTS.medium });
+      // Save test run — navigates to instances page, short wait ensures page starts loading
       await this.loc(L.saveTestRun).click({ timeout: TIMEOUTS.long });
-      await waitForNetworkIdle(this.page);
+      await waitForNetworkIdle(this.page, TIMEOUTS.short);
       // Verify test run appears on instances page
       await expect.soft(this.loc(L.createdTestrunAppearInstancesPage(runName))).toBeVisible({ timeout: TIMEOUTS.long });
     });
@@ -240,8 +241,13 @@ export class TestRunPage extends BasePage {
 
   async editTestRun(): Promise<void> {
     await test.step('Edit test run name', async () => {
-      await this.loc(L.createdTestrunOpenMenu(this.testRunName)).click();
-      await this.loc(L.editCtaInsideTR).click();
+      // Retry: open menu + click Edit in one atomic action (dropdown has enter animation)
+      await retryAction(this.page, async () => {
+        await this.page.keyboard.press('Escape');
+        await this.loc(L.createdTestrunOpenMenu(this.testRunName)).click();
+        await this.loc(L.editCtaInsideTR).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+        await this.loc(L.editCtaInsideTR).click({ force: true, timeout: TIMEOUTS.short });
+      }, { retries: 3, delayMs: 1_000, label: 'editTestRun-menu' });
       await this.loc(L.testRunTitle).clear();
       this.testRunName = `EditedTestRun_${randomString(RANDOM_LENGTH.standard)}`;
       await this.loc(L.testRunTitle).fill(this.testRunName);
@@ -255,8 +261,13 @@ export class TestRunPage extends BasePage {
       const runName = name ?? this.testRunName;
       await fillAndWaitForSearch(this.page, this.loc(L.searchFieldInLinkProject), runName);
       if (await this.isVisible(L.createdTestrunAppear(runName))) {
-        await this.loc(L.createdTestrunOpenMenu(runName)).click();
-        await this.loc(L.deleteInsideTR).click();
+        // Retry: open menu + click Delete in one atomic action (dropdown has enter animation)
+        await retryAction(this.page, async () => {
+          await this.page.keyboard.press('Escape');
+          await this.loc(L.createdTestrunOpenMenu(runName)).click();
+          await this.loc(L.deleteInsideTR).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+          await this.loc(L.deleteInsideTR).click({ force: true, timeout: TIMEOUTS.short });
+        }, { retries: 3, delayMs: 1_000, label: `deleteTestRun-menu(${runName})` });
         await this.loc(L.testrunDeleteButton).click();
         await expect.soft(this.loc(L.createdTestrunAppear(runName))).not.toBeVisible({ timeout: TIMEOUTS.medium });
       }
@@ -268,8 +279,13 @@ export class TestRunPage extends BasePage {
       const runName = name ?? this.testRunName;
       await this.loc(L.backtoTestRunList).click();
       await waitForNetworkIdle(this.page);
-      await this.loc(L.createdTestrunOpenMenu(runName)).first().click();
-      await this.loc(L.deleteInsideTR).click();
+      // Retry: open menu + click Delete in one atomic action (dropdown has enter animation)
+      await retryAction(this.page, async () => {
+        await this.page.keyboard.press('Escape');
+        await this.loc(L.createdTestrunOpenMenu(runName)).first().click();
+        await this.loc(L.deleteInsideTR).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+        await this.loc(L.deleteInsideTR).click({ force: true, timeout: TIMEOUTS.short });
+      }, { retries: 3, delayMs: 1_000, label: `deleteTestRunFromList-menu(${runName})` });
       await this.loc(L.testrunDeleteButton).click();
       await expect.soft(this.loc(L.createdTestrunAppear(runName))).not.toBeVisible({ timeout: TIMEOUTS.medium });
     });
@@ -290,9 +306,17 @@ export class TestRunPage extends BasePage {
     await test.step('Archive test run', async () => {
       await fillAndWaitForSearch(this.page, this.loc(L.searchFieldInLinkProject), this.testRunName, this.loc(L.createdTestrunAppear(this.testRunName)));
       await waitForNetworkIdle(this.page);
-      await this.loc(L.createdTestrunOpenMenu(this.testRunName)).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
-      await this.loc(L.createdTestrunOpenMenu(this.testRunName)).click();
-      await this.loc(L.archiveTestRun).click();
+
+      // Retry: open menu + click Archive in one atomic action (dropdown has enter animation)
+      await retryAction(this.page, async () => {
+        await this.page.keyboard.press('Escape');
+        await this.loc(L.createdTestrunOpenMenu(this.testRunName)).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
+        await this.loc(L.createdTestrunOpenMenu(this.testRunName)).click();
+        await this.loc(L.archiveTestRun).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+        // Force-click to bypass animation stability check (dropdown has enter animation)
+        await this.loc(L.archiveTestRun).click({ force: true, timeout: TIMEOUTS.short });
+      }, { retries: 3, delayMs: 1_000, label: 'archiveTestRun-menu' });
+
       await waitForNetworkIdle(this.page);
       // After archiving, the test run disappears from the active view
       await expect.soft(this.loc(L.createdTestrunAppear(this.testRunName))).not.toBeVisible({ timeout: TIMEOUTS.medium });
@@ -314,14 +338,19 @@ export class TestRunPage extends BasePage {
     await test.step('Duplicate test run from list', async () => {
       const runName = name ?? this.testRunName;
       await this.loc(L.backtoTestRunList).click();
-      await waitForNetworkIdle(this.page);
-      await this.loc(L.createdTestrunOpenMenu(runName)).first().click();
-      await this.loc(L.duplicateTestRun).click();
-      await waitForNetworkIdle(this.page);
-      // Duplicate navigates to edit page — go back to test run list
-      await this.page.locator(`//button[.//span[text()='Test Run']]`).click();
-      await waitForNetworkIdle(this.page);
-      // Search for the duplicated test run
+      // Wait for test run list to load — targeted wait for the menu button
+      await this.loc(L.createdTestrunOpenMenu(runName)).first().waitFor({ state: 'visible', timeout: TIMEOUTS.long });
+      // Retry: open menu + click Duplicate in one atomic action (dropdown has enter animation)
+      await retryAction(this.page, async () => {
+        await this.page.keyboard.press('Escape');
+        await this.loc(L.createdTestrunOpenMenu(runName)).first().click();
+        await this.loc(L.duplicateTestRun).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+        await this.loc(L.duplicateTestRun).click({ force: true, timeout: TIMEOUTS.short });
+      }, { retries: 3, delayMs: 1_000, label: `duplicateTestRunFromList-menu(${runName})` });
+      // Duplicate navigates to edit page — wait for back button, then go to test run list
+      await this.loc(L.backtoTestRunList).waitFor({ state: 'visible', timeout: TIMEOUTS.long });
+      await this.loc(L.backtoTestRunList).click();
+      // Search for the duplicated test run (fillAndWaitForSearch handles the wait)
       await fillAndWaitForSearch(this.page, this.loc(L.searchFieldInLinkProject), `Copy of ${runName}`, this.loc(L.duplicateTestRunByName(runName)));
       await expect.soft(this.loc(L.duplicateTestRunByName(runName))).toBeVisible({ timeout: TIMEOUTS.long });
     });

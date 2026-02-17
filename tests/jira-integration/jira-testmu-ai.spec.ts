@@ -1,7 +1,7 @@
 import { test, expect } from '../../src/fixtures/tms.fixture.js';
 
 test.describe('Jira TestMu AI Integration', {
-  tag: ['@regression'],
+  tag: ['@jira-integration' , '@smoke'],
   annotation: [
     { type: 'feature', description: 'Jira Integration' },
     { type: 'severity', description: 'minor' },

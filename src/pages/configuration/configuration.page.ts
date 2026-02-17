@@ -4,6 +4,7 @@ import { ConfigurationLocators as L } from './configuration.locators.js';
 import { TIMEOUTS, RANDOM_LENGTH } from '../../config/constants.js';
 import { randomString } from '../../utils/random.helper.js';
 import { waitForNetworkIdle } from '../../utils/wait.helper.js';
+import { retryAction } from '../../utils/retry.helper.js';
 import type { ConfigurationRequest } from '../../types/configuration.types.js';
 
 export class ConfigurationPage extends BasePage {
@@ -141,12 +142,20 @@ export class ConfigurationPage extends BasePage {
       await this.loc(L.searchConfigurationInput).fill(configName);
       await waitForNetworkIdle(this.page);
 
-      await this.loc(L.configurationOptionsMenu(configName)).click();
-      await this.loc(L.editConfigurationButton).click();
-
-      await this.loc(L.configurationNameInput).clear();
       this.configurationName = `EditedConfig_${randomString(RANDOM_LENGTH.standard)}`;
-      await this.loc(L.configurationNameInput).fill(this.configurationName);
+
+      // Retry: open menu + click Edit + clear + fill (dialog may re-render and detach input)
+      await retryAction(this.page, async () => {
+        await this.page.keyboard.press('Escape');
+        await this.loc(L.configurationOptionsMenu(configName)).click({ force: true });
+        await this.loc(L.editConfigurationButton).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+        await this.loc(L.editConfigurationButton).click({ force: true, timeout: TIMEOUTS.short });
+        await this.loc(L.configurationNameInput).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+        await this.loc(L.configurationNameInput).clear();
+        // After clear, React may remount the input — wait for fresh element
+        await this.loc(L.configurationNameInput).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+        await this.loc(L.configurationNameInput).fill(this.configurationName);
+      }, { retries: 3, delayMs: 2_000, label: `editConfig(${configName})` });
 
       await this.loc(L.saveConfigurationButton).click();
       await waitForNetworkIdle(this.page);

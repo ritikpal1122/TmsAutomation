@@ -4,8 +4,11 @@ import { TIMEOUTS } from '../config/constants.js';
 export class BasePage {
   constructor(readonly page: Page) {}
 
-  /** Locate element — auto-detects XPath (starts with / or () vs CSS */
+  /** Locate element — auto-detects XPath (starts with / or (), testid: prefix, or CSS */
   loc(selector: string): Locator {
+    if (selector.startsWith('testid:')) {
+      return this.page.getByTestId(selector.slice(7));
+    }
     return selector.startsWith('/') || selector.startsWith('(')
       ? this.page.locator(`xpath=${selector}`)
       : this.page.locator(selector);

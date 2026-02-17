@@ -21,8 +21,8 @@ export const DatasetLocators = {
   datasetEmptyStateDescription: `//*[contains(text(),'Start by creating or importing datasets')]`,
 
   // ============== CREATE DATASET MODAL LOCATORS ✅ VERIFIED ==============
-  datasetModalDialog: `//div[@role='dialog']`,
-  datasetModalTitle: `//h2[normalize-space()='Create Dataset']`,
+  datasetModalDialog: `[data-testid="projects.parameters.create"]`,
+  datasetModalTitle: `//div[@aria-label="Create Dataset"]//h4[normalize-space()='Create Dataset']`,
   datasetNameInput: `//input[@placeholder='Enter dataset name']`,
   datasetDescriptionInput: `//textarea[contains(@placeholder,'Add a description')]`,
   datasetCreateBtnModal: `//button[normalize-space()='Create']`,
@@ -51,6 +51,10 @@ export const DatasetLocators = {
   datasetDetailMenuBtn: `//button[@aria-haspopup='true'][.//*[contains(@class,'octicon-kebab-horizontal')]]`,
   datasetEditOption: `//div[normalize-space()='Edit Details' and not(.//div)]`,
   datasetDeleteOption: `//div[normalize-space()='Delete Dataset' and not(.//div)]`,
+
+  // ============== DISCARD CHANGES DIALOG ==============
+  discardChangesDialog: `//h4[text()='Discard changes']/ancestor::div[contains(@class,'fixed') or @role='dialog']`,
+  discardChangesConfirmBtn: `//button[normalize-space()='Confirm']`,
 
   // ============== DELETE CONFIRMATION DIALOG ⚠️ PENDING ==============
   datasetDeleteConfirmBtn: `//button[normalize-space()='Delete' or normalize-space()='Confirm' or contains(@class,'danger')]`,

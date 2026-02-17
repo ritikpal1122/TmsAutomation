@@ -46,7 +46,7 @@ export const MilestoneLocators = {
 
   // ============== MILESTONE LIST PAGE ==============
   milestoneSearchInput: `//input[@placeholder='Find a milestone...']`,
-  milestoneViewDropdown: `//button[contains(.,'View:')]`,
+  milestoneViewDropdown: `[data-testid="projects.milestones.list.view"]`,
   milestoneViewOpen: `//ul[@role='listbox']//span[text()='Open']`,
   milestoneViewComplete: `//ul[@role='listbox']//span[contains(.,'Complete')]`,
   milestoneEmptyState: `//span[text()='Oops! No Milestone found matching your search. Recheck your search query and try again.']`,
@@ -96,25 +96,25 @@ export const MilestoneLocators = {
  * Returns locator for milestone name on detail page header
  */
 export const milestoneDetailName = (milestoneName: string) =>
-  `//span[contains(.,'Milestones/') and contains(.,'${milestoneName}')]`;
+  `//div[@data-testid = 'projects.milestones.list.row']//span[contains(.,'Milestones/') and contains(.,'${milestoneName}')]`;
 
 /**
  * Returns locator for milestone description on detail page
  */
 export const milestoneDetailDescriptionText = (description: string) =>
-  `//span[contains(text(),'${description}')]`;
+  `//div[@data-testid = 'projects.milestones.list.row']//span[contains(text(), '${description}')]`;
 
 /**
  * Returns locator for milestone tag on detail page
  */
 export const milestoneDetailTag = (tagName: string) =>
-  `//span[contains(text(),'${tagName}')]`;
+  `//div[@data-testid = 'projects.milestones.list.row']//span[contains(text(), '${tagName}')]`;
 
 /**
  * Returns locator for a specific milestone by name in the list
  */
 export const milestoneInList = (milestoneName: string) =>
-  `//span[contains(text(),'${milestoneName}')]`;
+  `//div[@data-testid = 'projects.milestones.list.row']//span[contains(text(), '${milestoneName}')]`;
 
 /**
  * Returns locator for a specific milestone link/button by name

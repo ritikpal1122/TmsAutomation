@@ -1,7 +1,7 @@
 import { test, expect } from '../../src/fixtures/tms.fixture.js';
 
 test.describe('Milestone Search, Filter, and Mark Complete', {
-  tag: ['@regression'],
+  tag: ['@regression' , '@smoke' , '@milestone'],
   annotation: [
     { type: 'feature', description: 'Milestone Management' },
     { type: 'severity', description: 'normal' },

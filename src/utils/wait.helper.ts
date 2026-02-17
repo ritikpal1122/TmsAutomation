@@ -2,7 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { TIMEOUTS } from '../config/constants.js';
 
 /** Wait for all network requests to finish (falls back to DOM ready) */
-export async function waitForNetworkIdle(page: Page, timeout = TIMEOUTS.medium): Promise<void> {
+export async function waitForNetworkIdle(page: Page, timeout: number = TIMEOUTS.medium): Promise<void> {
   try {
     await page.waitForLoadState('networkidle', { timeout });
   } catch {

@@ -24,6 +24,13 @@ export class DatasetPage extends BasePage {
   async navigateBackToDatasetsList(): Promise<void> {
     await test.step('Navigate back to datasets list', async () => {
       await this.loc(L.datasetBackBtn).click();
+
+      // The dataset editor may show a "Discard changes" dialog when navigating away
+      const discardBtn = this.loc(L.discardChangesConfirmBtn);
+      if (await discardBtn.isVisible({ timeout: TIMEOUTS.short }).catch(() => false)) {
+        await discardBtn.click();
+      }
+
       await expect.soft(this.loc(L.datasetSearchInput)).toBeVisible({ timeout: TIMEOUTS.medium });
     });
   }
@@ -209,10 +216,16 @@ export class DatasetPage extends BasePage {
 
   async verifyParameterCount(expectedCount: number): Promise<void> {
     await test.step(`Verify parameter count is ${expectedCount}`, async () => {
-      const expectedText = `${expectedCount} Parameter`;
-      await expect.soft(this.loc(`//h5[contains(.,'${expectedText}')]`)).toBeVisible({ timeout: TIMEOUTS.medium });
+  
+      const label = expectedCount === 1 ? 'Parameter' : 'Parameters';
+      const expectedText = `${expectedCount} ${label}`;
+  
+      await expect.soft(
+        this.loc(`//h5[normalize-space()='${expectedText}']`)
+      ).toBeVisible({ timeout: TIMEOUTS.medium });
+  
     });
-  }
+  }  
 
   async verifyDatasetNameValidationError(): Promise<void> {
     await test.step('Verify dataset name validation error', async () => {

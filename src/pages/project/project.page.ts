@@ -42,30 +42,18 @@ export class ProjectPage extends BasePage {
       const projectName = name ?? this.projectName;
       // Navigate to projects list
       await this.page.goto(EnvConfig.tmsBaseUrl, { waitUntil: 'domcontentloaded' });
-
-      // Dismiss any overlay/modal that might be present
       await this.page.keyboard.press('Escape');
-
-      // Wait for loading to complete
       await this.loc(L.searchProject).waitFor({ state: 'visible', timeout: TIMEOUTS.long });
-      try {
-        await this.loc(L.loadingProjects).waitFor({ state: 'hidden', timeout: TIMEOUTS.extraLong });
-      } catch {
-        // Loading indicator might not appear or already gone
-      }
-      await waitForNetworkIdle(this.page);
 
       // Retry search up to 3 times (newly created projects may take time to appear)
       await retryAction(this.page, async () => {
-        // Dismiss any overlay before each attempt
         await this.page.keyboard.press('Escape');
-        await waitForNetworkIdle(this.page);
 
         const el = this.loc(L.searchProject);
         await el.click();
-        await el.clear();
-        await el.pressSequentially(projectName, { delay: 50 });
-        await waitForNetworkIdle(this.page);
+        await el.fill(projectName);
+        // fill() alone doesn't trigger the React search — press Enter to submit
+        await this.page.keyboard.press('Enter');
 
         const projectLink = this.loc(L.createdProject(projectName));
         await expect(projectLink).toBeVisible({ timeout: TIMEOUTS.medium });
@@ -81,63 +69,56 @@ export class ProjectPage extends BasePage {
   async editProject(): Promise<void> {
     await test.step('Edit project name', async () => {
       await this.loc(L.projectTripleDotButton(this.projectName)).first().click();
+      await this.loc(L.projectEditButton).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
       await this.loc(L.projectEditButton).click();
       await this.loc(L.projectTitle).clear();
       this.projectName = randomString(RANDOM_LENGTH.extraLong);
       await this.loc(L.projectTitle).fill(this.projectName);
       await this.loc(L.saveChangesButton).click();
+      await waitForNetworkIdle(this.page);
     });
   }
 
   async deleteProject(name?: string): Promise<void> {
     await test.step(`Delete project ${name ?? this.projectName}`, async () => {
       const projectName = name ?? this.projectName;
-      // Navigate to projects list
-      await this.page.goto(EnvConfig.tmsBaseUrl, { waitUntil: 'domcontentloaded' });
-      await this.page.keyboard.press('Escape');
-      await this.loc(L.searchProject).waitFor({ state: 'visible', timeout: TIMEOUTS.long });
-      try {
-        await this.loc(L.loadingProjects).waitFor({ state: 'hidden', timeout: TIMEOUTS.extraLong });
-      } catch {
-        // Loading indicator might not appear or already gone
+
+      // Navigate to projects list only if not already there
+      if (!(await this.isVisible(L.searchProject, TIMEOUTS.short))) {
+        await this.page.goto(EnvConfig.tmsBaseUrl, { waitUntil: 'domcontentloaded' });
+        await this.page.keyboard.press('Escape');
+        await this.loc(L.searchProject).waitFor({ state: 'visible', timeout: TIMEOUTS.long });
       }
-      await waitForNetworkIdle(this.page);
 
       const searchInput = this.loc(L.searchProject);
       await searchInput.click();
-      await searchInput.clear();
-      await searchInput.pressSequentially(projectName, { delay: 50 });
-      await waitForNetworkIdle(this.page);
-      if (await this.isVisible(L.createdProject(projectName))) {
-        // Dismiss any stale tooltips/menus before opening the options menu
-        await this.page.keyboard.press('Escape');
-        await waitForNetworkIdle(this.page);
+      await searchInput.fill(projectName);
+      // fill() alone doesn't trigger the React search — press Enter to submit
+      await this.page.keyboard.press('Enter');
 
-        // Retry opening the triple-dot menu up to 3 times
-        let menuOpened = false;
-        for (let attempt = 0; attempt < 3 && !menuOpened; attempt++) {
-          if (attempt > 0) {
-            await this.page.keyboard.press('Escape');
-            await waitForNetworkIdle(this.page);
-          }
-          await this.loc(L.projectTripleDotButton(projectName)).first().click({ force: true });
-          try {
-            await this.loc(L.projectDeleteButton).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
-            menuOpened = true;
-          } catch {
-            // Menu didn't open, retry
-          }
-        }
-        await this.loc(L.projectDeleteButton).click();
-        const confirmInput = this.loc(L.projectDeleteConfirmInput);
-        await confirmInput.waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
-        await confirmInput.click();
-        await confirmInput.fill('');
-        await confirmInput.pressSequentially('DELETE');
-        await this.loc(L.projectDeleteConfirmation).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
-        await this.loc(L.projectDeleteConfirmation).click();
-        await expect(this.loc(L.createdProject(projectName))).not.toBeVisible({ timeout: TIMEOUTS.medium });
+      // Wait for search result directly instead of generic waitForNetworkIdle
+      const projectLink = this.loc(L.createdProject(projectName));
+      if (!(await this.isVisible(L.createdProject(projectName), TIMEOUTS.medium))) {
+        return; // Project not found (already deleted or never existed)
       }
+
+      await this.page.keyboard.press('Escape');
+
+      // Retry: open menu + click Delete in one atomic action (menu can close between attempts)
+      await retryAction(this.page, async () => {
+        await this.page.keyboard.press('Escape');
+        await this.loc(L.projectTripleDotButton(projectName)).first().click({ force: true });
+        await this.loc(L.projectDeleteButton).waitFor({ state: 'visible', timeout: TIMEOUTS.short });
+        // Force-click to bypass animation stability check (dropdown has enter animation)
+        await this.loc(L.projectDeleteButton).click({ force: true, timeout: TIMEOUTS.short });
+      }, { retries: 3, delayMs: 1_000, label: `deleteProject-menu(${projectName})` });
+
+      const confirmInput = this.loc(L.projectDeleteConfirmInput);
+      await confirmInput.waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
+      await confirmInput.fill('DELETE');
+      await this.loc(L.projectDeleteConfirmation).waitFor({ state: 'visible', timeout: TIMEOUTS.medium });
+      await this.loc(L.projectDeleteConfirmation).click();
+      await expect(projectLink).not.toBeVisible({ timeout: TIMEOUTS.medium });
     });
   }
 

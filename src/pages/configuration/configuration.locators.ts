@@ -33,7 +33,7 @@ export const ConfigurationLocators = {
   latestVersion: `//span[text()='Latest']`,
 
   // Resolution
-  resolutionDropdown: `//*[normalize-space()='Resolution' and not(self::h5) and not(self::button) and not(ancestor::button)]/following::button[1]`,
+  resolutionDropdown: `//span[normalize-space()='Resolution' and not(ancestor::button)]/parent::div/following-sibling::div/button[@data-testid='common.select-panel.trigger']`,
   resolution1920x1080: `//span[text()='1920x1080']`,
   resolution1366x768: `//span[text()='1366x768']`,
   resolution1280x1024: `//span[text()='1280x1024']`,
